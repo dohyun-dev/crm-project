@@ -9,7 +9,7 @@ const icon = (name) => (
 const navConfig = [
   {
     title: '캠페인 등록',
-    path: '/create-campaign',
+    path: '/campaign/create',
     icon: icon('ic_campaign'),
   },
   {

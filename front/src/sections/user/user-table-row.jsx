@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
@@ -25,6 +26,8 @@ export default function UserTableRow({
   updatedAt,
   handleClick,
 }) {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(null);
 
   const handleOpenMenu = (event) => {
@@ -69,7 +72,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={() => navigate(`/user/edit/${id}`)}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           수정
         </MenuItem>

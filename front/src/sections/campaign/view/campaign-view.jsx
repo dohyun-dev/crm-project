@@ -161,6 +161,7 @@ export default function CampaignView() {
                   .map((row) => (
                     <CampaignTableRow
                       key={row.id}
+                      id={row.id}
                       state={row.state}
                       memberName={row.memberName}
                       reward={row.reward}
