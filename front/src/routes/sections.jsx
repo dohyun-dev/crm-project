@@ -1,8 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
+import CampaignPage from 'src/pages/campaign';
 import UserCreatePage from 'src/pages/user-create';
 import DashboardLayout from 'src/layouts/dashboard';
+import CampaignCreatePage from 'src/pages/campaign-create';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const UserPage = lazy(() => import('src/pages/user'));
@@ -25,6 +27,8 @@ export default function Router() {
         { element: <IndexPage />, index: true },
         { path: 'user', element: <UserPage /> },
         { path: 'user/new', element: <UserCreatePage /> },
+        { path: 'campaign/:type', element: <CampaignPage /> },
+        { path: 'create-campaign', element: <CampaignCreatePage /> },
       ],
     },
     {

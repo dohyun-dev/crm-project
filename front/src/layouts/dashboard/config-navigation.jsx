@@ -8,9 +8,24 @@ const icon = (name) => (
 
 const navConfig = [
   {
-    title: 'dashboard',
-    path: '/',
-    icon: icon('ic_analytics'),
+    title: '캠페인 등록',
+    path: '/create-campaign',
+    icon: icon('ic_campaign'),
+  },
+  {
+    title: '플레이스 트래픽',
+    path: '/campaign/place-traffic',
+    icon: icon('ic_place_traffic'),
+  },
+  {
+    title: '플레이스 저장하기',
+    path: '/campaign/save-place',
+    icon: icon('ic_save_place'),
+  },
+  {
+    title: '자동완성',
+    path: '/campaign/autocomplete',
+    icon: icon('ic_autocomplete'),
   },
   {
     title: '고객관리',
