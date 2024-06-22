@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
@@ -5,6 +7,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Iconify from '../../components/iconify';
 
 export default function UserActionToolbar() {
+  const navigate = useNavigate();
+
   return (
     <Toolbar
       sx={{
@@ -39,6 +43,7 @@ export default function UserActionToolbar() {
           variant="contained"
           color="primary"
           startIcon={<Iconify icon="eva:person-add-outline" />}
+          onClick={() => navigate('/user/new')}
         >
           회원등록
         </Button>

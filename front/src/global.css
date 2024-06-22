@@ -5,3 +5,8 @@
 * {
   font-family: "Noto Sans KR", sans-serif !important;
 }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
