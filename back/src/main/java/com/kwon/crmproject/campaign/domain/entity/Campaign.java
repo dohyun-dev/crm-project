@@ -1,7 +1,6 @@
 package com.kwon.crmproject.campaign.domain.entity;
 
-import com.kwon.crmproject.common.entity.BaseTimeEntity;
-import com.kwon.crmproject.member.domain.entity.Member;
+import com.kwon.crmproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,12 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Campaign extends BaseTimeEntity {
+public class Campaign extends BaseEntity {
 
     private String keyword;
 

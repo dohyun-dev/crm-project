@@ -1,6 +1,6 @@
 package com.kwon.crmproject.member.domain.entity;
 
-import com.kwon.crmproject.common.entity.BaseTimeEntity;
+import com.kwon.crmproject.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Member extends BaseTimeEntity {
+public class Member extends BaseEntity {
 
     private String companyName;
     private String username;
