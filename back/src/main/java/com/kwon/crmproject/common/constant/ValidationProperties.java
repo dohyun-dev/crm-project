@@ -9,7 +9,7 @@ public interface ValidationProperties {
 
     // message
     interface Message {
-        String STRING_LENGTH_MAX = "{String.length.max}";
+        String STRING_MAX_LENGTH = "{String.max.length}";
         String IS_NUMBER_CHECK = "{validation.IS_NUMBER_CHECK_PATTERN}";
         String MULTIPLE_OF_FIFTY = "{validation.MultipleOfFifty}";
     }
