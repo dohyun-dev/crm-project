@@ -49,7 +49,7 @@ public abstract class MemberRequest {
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         @Pattern(
-                regexp = ValidationProperties.EXIST_HYPHEN_CHECK_PATTERN,
+                regexp = ValidationProperties.IS_NUMBER_CHECK_PATTERN,
                 message = ValidationProperties.Message.CONTACT_FIELD_VALIDATION
         )
         private String contact;
