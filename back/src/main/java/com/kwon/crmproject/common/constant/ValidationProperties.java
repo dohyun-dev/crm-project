@@ -12,5 +12,7 @@ public interface ValidationProperties {
         String STRING_MAX_LENGTH = "{String.max.length}";
         String IS_NUMBER_CHECK = "{validation.IS_NUMBER_CHECK_PATTERN}";
         String MULTIPLE_OF_FIFTY = "{validation.MultipleOfFifty}";
+
+        String CONTACT_FIELD_VALIDATION =  "{validation.field.contact}";
     }
 }
