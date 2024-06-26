@@ -7,8 +7,13 @@ import org.hibernate.validator.constraints.Length;
 
 public abstract class MemberRequest {
 
+    public record SearchCondition(
+            String companyName
+    ) {
+    }
+
     @Data
-    public static class Join {
+    public static class Command {
         @Length(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
