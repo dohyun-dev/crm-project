@@ -26,26 +26,19 @@ public class Campaign extends BaseEntity {
 
     private LocalDate endDate;
 
-    private String email;
-
-    private String contact;
-
-    private String accountHolder;
-
     @Enumerated(EnumType.STRING)
     private CampaignState state;
 
     @Enumerated(EnumType.STRING)
     private CampaignRewardType rewardType;
 
-    private String trafficRequest;
+    private Integer trafficRequest;
 
     @Builder
     public Campaign(
             Long id, String keyword, String companyName,
             String url, String mid, LocalDate startDate, LocalDate endDate,
-            String email, String contact, String accountHolder,
-            CampaignState state, CampaignRewardType rewardType, String trafficRequest
+            CampaignState state, CampaignRewardType rewardType, Integer trafficRequest
     ) {
         super(id);
         this.keyword = keyword;
@@ -54,11 +47,24 @@ public class Campaign extends BaseEntity {
         this.mid = mid;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.email = email;
-        this.contact = contact;
-        this.accountHolder = accountHolder;
         this.state = state;
         this.rewardType = rewardType;
         this.trafficRequest = trafficRequest;
+    }
+
+    public void update(
+            String keyword, String companyName,
+            String url, String mid, LocalDate startDate, LocalDate endDate,
+            CampaignRewardType rewardType, Integer trafficRequest, CampaignState state
+    ) {
+        this.keyword = keyword;
+        this.companyName = companyName;
+        this.url = url;
+        this.mid = mid;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.rewardType = rewardType;
+        this.trafficRequest = trafficRequest;
+        this.state = state;
     }
 }
