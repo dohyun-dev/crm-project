@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import dayjs from 'dayjs';
+import * as yup from 'yup';
+import Swal from 'sweetalert2';
 import { ko } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -11,31 +15,93 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import CardHeader from '@mui/material/CardHeader';
+import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import {
   Radio,
-  InputLabel,
   RadioGroup,
   FormControl,
   CardActions,
   CardContent,
-  OutlinedInput,
+  FormHelperText,
 } from '@mui/material';
 
 import Iconify from '../../components/iconify';
 
+const STRING_MAX_LENGTH = 1024;
+const NUMBER_CHECK_PATTERN = /^[0-9]+$/;
+
+const getMinDate = () => {
+  const now = dayjs();
+  if (now.hour() < 16) {
+    return now.add(1, 'day').startOf('day');
+  }
+  return now.add(2, 'day').startOf('day');
+};
+
+const validationSchema = yup.object().shape({
+  keyword: yup
+    .string()
+    .max(STRING_MAX_LENGTH, `키워드는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+    .required('키워드를 입력해주세요.'),
+  companyName: yup
+    .string()
+    .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+    .required('업체명을 입력해주세요.'),
+  url: yup
+    .string()
+    .url('유효한 URL을 입력해주세요.')
+    .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+    .required('URL을 입력해주세요.'),
+  mid: yup
+    .string()
+    .matches(NUMBER_CHECK_PATTERN, '숫자만 입력할 수 있습니다.')
+    .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+    .required('MID를 입력해주세요.'),
+  startDate: yup
+    .date()
+    .min(getMinDate(), ({ min }) => `시작일은 ${min.format('YYYY-MM-DD')} 이후여야 합니다.`)
+    .required('시작일을 입력해주세요.'),
+  period: yup
+    .number()
+    .transform((value, originalValue) => (originalValue.trim() === '' ? null : value))
+    .required('기간을 입력해주세요.')
+    .positive('1일 부터 입력해주세요.'),
+  rewardType: yup.string().required('리워드 타입을 선택해주세요.'),
+  trafficRequest: yup
+    .string()
+    .matches(NUMBER_CHECK_PATTERN, '숫자만 입력할 수 있습니다.')
+    .transform((value, originalValue) => (originalValue.trim() === '' ? 0 : value))
+    .test('MULTIPLE_OF_FIFTY', '50 단위로 입력해주세요.', (value) => value % 50 === 0)
+    .max(STRING_MAX_LENGTH, `유입요청은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+    .required('유입요청을 입력해주세요.'),
+});
+
 export default function CampaignCreateView() {
   const navigate = useNavigate();
 
-  const [selectedDate, setSelectedDate] = useState(null);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm({
+    mode: 'onChange',
+    resolver: yupResolver(validationSchema),
+  });
 
-  const [selectedOption, setSelectedOption] = useState('');
-
-  const handleChange = (event) => {
-    setSelectedOption(event.target.value);
+  const onSubmit = (data) => {
+    console.log(data);
+    Swal.fire({
+      title: '성공!',
+      text: '캠페인 등록에 성공했습니다.',
+      icon: 'success',
+      confirmButtonText: '확인',
+    });
+    navigate('/campaigns');
   };
 
   return (
@@ -57,7 +123,7 @@ export default function CampaignCreateView() {
       </Stack>
       {/* 콘텐츠 헤더 끝 */}
 
-      <form noValidate autoComplete="off">
+      <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
           <Card sx={{ p: 1 }}>
             <CardHeader
@@ -70,78 +136,178 @@ export default function CampaignCreateView() {
 
             <CardContent>
               <Stack p={1} spacing={2}>
-                <Typography variant="subtitle2">키워드</Typography>
-                <FormControl fullWidth variant="outlined" size="medium">
-                  <InputLabel htmlFor="keyword">키워드</InputLabel>
-                  <OutlinedInput id="keyword" label="키워드" />
-                </FormControl>
+                <Controller
+                  name="keyword"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="키워드"
+                      variant="outlined"
+                      error={!!errors.keyword}
+                      helperText={errors.keyword?.message}
+                      fullWidth
+                    />
+                  )}
+                />
 
-                <Typography variant="subtitle2">업체명</Typography>
-                <FormControl fullWidth variant="outlined" size="medium">
-                  <InputLabel htmlFor="companyName">업체명</InputLabel>
-                  <OutlinedInput id="companyName" label="업체명" />
-                </FormControl>
+                <Controller
+                  name="companyName"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="업체명"
+                      variant="outlined"
+                      error={!!errors.companyName}
+                      helperText={errors.companyName?.message}
+                      fullWidth
+                    />
+                  )}
+                />
 
-                <Typography variant="subtitle2">URL</Typography>
-                <FormControl fullWidth variant="outlined" size="medium">
-                  <InputLabel htmlFor="campaignUrl">URL</InputLabel>
-                  <OutlinedInput id="campaignUrl" label="URL" />
-                </FormControl>
+                <Controller
+                  name="url"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="URL"
+                      variant="outlined"
+                      error={!!errors.url}
+                      helperText={errors.url?.message}
+                      fullWidth
+                    />
+                  )}
+                />
 
-                <Typography variant="subtitle2">MID</Typography>
-                <FormControl fullWidth variant="outlined" size="medium">
-                  <InputLabel htmlFor="mid">MID</InputLabel>
-                  <OutlinedInput id="mid" label="MID" />
-                </FormControl>
+                <Controller
+                  name="mid"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="MID"
+                      variant="outlined"
+                      error={!!errors.mid}
+                      helperText={errors.mid?.message}
+                      fullWidth
+                    />
+                  )}
+                />
 
                 <Typography variant="subtitle2">기간</Typography>
                 <Box display="flex">
                   <FormControl variant="outlined" size="medium" sx={{ flexGrow: 1, mr: 2 }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={ko}>
-                      <DatePicker
-                        label="기간"
-                        value={selectedDate}
-                        onChange={(newValue) => setSelectedDate(newValue)}
-                        renderInput={(params) => <TextField {...params} />}
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        render={({ field }) => (
+                          <DatePicker
+                            label="시작날짜"
+                            value={field.value}
+                            onChange={field.onChange}
+                            minDate={getMinDate()}
+                            renderInput={(params) => (
+                              <TextField {...params} error={!!errors.startDate} />
+                            )}
+                          />
+                        )}
                       />
+                      {errors.startDate && (
+                        <FormHelperText error>{errors.startDate.message}</FormHelperText>
+                      )}
                     </LocalizationProvider>
                   </FormControl>
-                  <FormControl variant="outlined" size="medium">
-                    <OutlinedInput
-                      id="durationDays"
-                      type="number"
-                      endAdornment={<InputAdornment position="end">일</InputAdornment>}
-                    />
-                  </FormControl>
+
+                  <Controller
+                    name="period"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="기간"
+                        type="number"
+                        variant="outlined"
+                        error={!!errors.period}
+                        helperText={errors.period?.message}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">일</InputAdornment>,
+                        }}
+                      />
+                    )}
+                  />
                 </Box>
 
                 <Typography variant="subtitle2">리워드</Typography>
-                <FormControl component="fieldset" fullWidth variant="outlined" size="medium">
-                  <RadioGroup
-                    aria-label="리워드"
-                    name="reward"
-                    value={selectedOption}
-                    onChange={handleChange}
-                  >
-                    <FormControlLabel
-                      value="placeTraffic"
-                      control={<Radio />}
-                      label="플레이스 트래픽"
-                    />
-                    <FormControlLabel
-                      value="savePlace"
-                      control={<Radio />}
-                      label="플레이스 저장하기"
-                    />
-                    <FormControlLabel value="autoomplete" control={<Radio />} label="자동완성" />
-                  </RadioGroup>
-                </FormControl>
+                <Controller
+                  name="rewardType"
+                  defaultValue=""
+                  control={control}
+                  defaultValue="PLACE_TRAFFIC"
+                  render={({ field }) => (
+                    <FormControl component="fieldset" fullWidth variant="outlined" size="medium">
+                      <RadioGroup {...field}>
+                        <FormControlLabel
+                          value="PLACE_TRAFFIC"
+                          control={<Radio />}
+                          label="플레이스 트래픽"
+                        />
+                        <FormControlLabel
+                          value="SAVE_PLACE"
+                          control={<Radio />}
+                          label="플레이스 저장하기"
+                        />
+                        <FormControlLabel
+                          value="AUTOCOMPLETE"
+                          control={<Radio />}
+                          label="자동 완성"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  )}
+                />
 
-                <Typography variant="subtitle2">유입요청</Typography>
-                <FormControl fullWidth variant="outlined" size="medium">
-                  <InputLabel htmlFor="trafficRequest">유입요청</InputLabel>
-                  <OutlinedInput id="trafficRequest" label="유입요청" />
-                </FormControl>
+                <Controller
+                  name="trafficRequest"
+                  control={control}
+                  defaultValue={0}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="유입요청"
+                      variant="outlined"
+                      error={!!errors.trafficRequest}
+                      helperText={errors.trafficRequest?.message}
+                      fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Box display="flex" flexDirection="column">
+                              <IconButton
+                                size="small"
+                                sx={{ p: 0 }}
+                                onClick={() => field.onChange(parseInt(field.value || 0) + 50)}
+                              >
+                                <Iconify icon="eva:arrow-up-outline" />
+                              </IconButton>
+                              <IconButton
+                                size="small"
+                                sx={{ p: 0 }}
+                                onClick={() =>
+                                  field.onChange(Math.max(0, parseInt(field.value || 0) - 50))
+                                }
+                              >
+                                <Iconify icon="eva:arrow-down-outline" />
+                              </IconButton>
+                            </Box>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
               </Stack>
             </CardContent>
 
@@ -149,6 +315,7 @@ export default function CampaignCreateView() {
 
             <CardActions sx={{ py: 3, px: 3 }}>
               <Button
+                type="submit"
                 variant="contained"
                 color="primary"
                 startIcon={<Iconify icon="eva:checkmark-circle-2-outline" />}
