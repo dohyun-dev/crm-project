@@ -5,6 +5,7 @@ import com.kwon.crmproject.campaign.domain.entity.CampaignState;
 import com.kwon.crmproject.common.constant.ValidationProperties;
 import com.kwon.crmproject.common.validator.annotation.MultipleOfFifty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -22,25 +23,25 @@ public abstract class CampaignRequest {
 
     @Data
     public static class Create {
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String keyword;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String companyName;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String url;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
@@ -50,13 +51,13 @@ public abstract class CampaignRequest {
         )
         private String mid;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private LocalDate startDate;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
@@ -68,7 +69,7 @@ public abstract class CampaignRequest {
         )
         private CampaignRewardType rewardType;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
@@ -82,25 +83,25 @@ public abstract class CampaignRequest {
 
     @Data
     public static class Edit {
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String keyword;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String companyName;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String url;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
@@ -110,13 +111,13 @@ public abstract class CampaignRequest {
         )
         private String mid;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private LocalDate startDate;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
@@ -124,7 +125,7 @@ public abstract class CampaignRequest {
 
         private CampaignRewardType rewardType;
 
-        @Length(
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )

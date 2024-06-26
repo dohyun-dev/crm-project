@@ -1,9 +1,10 @@
 package com.kwon.crmproject.member.dto;
 
 import com.kwon.crmproject.common.constant.ValidationProperties;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
 public abstract class MemberRequest {
 
@@ -14,37 +15,43 @@ public abstract class MemberRequest {
 
     @Data
     public static class Command {
-        @Length(
+        @NotBlank
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String companyName;
 
-        @Length(
+        @NotBlank
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String username;
 
-        @Length(
+        @NotBlank
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String password;
 
-        @Length(
+        @NotBlank
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String businessRegistrationNumber;
 
-        @Length(
+        @NotBlank
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String email;
 
-        @Length(
+        @NotBlank
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
@@ -54,7 +61,8 @@ public abstract class MemberRequest {
         )
         private String contact;
 
-        @Length(
+        @NotBlank
+        @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )

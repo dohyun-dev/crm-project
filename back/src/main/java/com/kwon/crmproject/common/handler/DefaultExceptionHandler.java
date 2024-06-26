@@ -27,14 +27,6 @@ public class DefaultExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> defaultExceptionHandler(Exception exception) {
-        log.error("{}", exception);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.of(CustomException.of(ErrorType.INTERNAL_SERVER_ERROR)));
-    }
-
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<?> customExceptionHandler(CustomException customException, HttpServletRequest request) {
         return ResponseEntity
@@ -44,7 +36,6 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
-        
         Map<String, String> errors = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -55,15 +46,22 @@ public class DefaultExceptionHandler {
                 .body(new ValidationErrorResponse(errors));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> defaultExceptionHandler(Exception exception) {
+        log.error("{}", exception);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(CustomException.of(ErrorType.INTERNAL_SERVER_ERROR)));
+    }
 
     private String getErrorMessage(FieldError error) {
-		String[] codes = error.getCodes();
-		for (String code : codes) {
-			try {
-				return messageSource.getMessage(code, error.getArguments(), Locale.KOREA);
-			} catch (NoSuchMessageException ignored) {}
-		}
-		return error.getDefaultMessage();
-	}
+        String[] codes = error.getCodes();
+        for (String code : codes) {
+            try {
+                return messageSource.getMessage(code, error.getArguments(), Locale.KOREA);
+            } catch (NoSuchMessageException ignored) {}
+        }
+        return error.getDefaultMessage();
+    }
 
 }
