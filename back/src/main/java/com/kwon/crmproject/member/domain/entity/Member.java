@@ -35,4 +35,18 @@ public class Member extends BaseEntity {
         this.contact = contact;
         this.accountHolder = accountHolder;
     }
+
+    public void update(
+            String companyName, String username,
+            String password, String businessRegistrationNumber,
+            String email, String contact, String accountHolder
+    ) {
+        this.companyName = companyName;
+        this.username = username;
+        this.password = password;
+        this.businessRegistrationNumber = businessRegistrationNumber;
+        this.email = email;
+        this.contact = contact;
+        this.accountHolder = accountHolder;
+    }
 }
