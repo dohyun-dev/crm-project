@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
+import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
@@ -29,6 +30,7 @@ import {
   FormHelperText,
 } from '@mui/material';
 
+import API from '../../apis/api';
 import Iconify from '../../components/iconify';
 
 const STRING_MAX_LENGTH = 1024;
@@ -53,28 +55,26 @@ const validationSchema = yup.object().shape({
     .required('업체명을 입력해주세요.'),
   url: yup
     .string()
-    .url('유효한 URL을 입력해주세요.')
     .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
     .required('URL을 입력해주세요.'),
   mid: yup
     .string()
-    .matches(NUMBER_CHECK_PATTERN, '숫자만 입력할 수 있습니다.')
     .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
     .required('MID를 입력해주세요.'),
   startDate: yup
     .date()
     .min(getMinDate(), ({ min }) => `시작일은 ${min.format('YYYY-MM-DD')} 이후여야 합니다.`)
-    .required('시작일을 입력해주세요.'),
+    .required('시작날짜을 입력해주세요.'),
   period: yup
     .number()
-    .transform((value, originalValue) => (originalValue.trim() === '' ? null : value))
+    .transform((value, originalValue) => (originalValue === '' ? null : value))
     .required('기간을 입력해주세요.')
     .positive('1일 부터 입력해주세요.'),
   rewardType: yup.string().required('리워드 타입을 선택해주세요.'),
   trafficRequest: yup
     .string()
+    .transform((value, originalValue) => (originalValue === '' ? 0 : value))
     .matches(NUMBER_CHECK_PATTERN, '숫자만 입력할 수 있습니다.')
-    .transform((value, originalValue) => (originalValue.trim() === '' ? 0 : value))
     .test('MULTIPLE_OF_FIFTY', '50 단위로 입력해주세요.', (value) => value % 50 === 0)
     .max(STRING_MAX_LENGTH, `유입요청은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
     .required('유입요청을 입력해주세요.'),
@@ -94,14 +94,40 @@ export default function CampaignCreateView() {
   });
 
   const onSubmit = (data) => {
-    console.log(data);
-    Swal.fire({
-      title: '성공!',
-      text: '캠페인 등록에 성공했습니다.',
-      icon: 'success',
-      confirmButtonText: '확인',
-    });
-    navigate('/campaigns');
+    data.startDate = data.startDate ? format(new Date(data.startDate), 'yyyy-MM-dd') : null;
+    API.CAMPAIGN_API.createCampaign(data)
+      .then(() => {
+        Swal.fire({
+          title: '성공!',
+          text: '캠페인 등록에 성공했습니다.',
+          icon: 'success',
+          confirmButtonText: '확인',
+        });
+        navigate(`/campaign/${data.rewardType}`);
+      })
+      .catch((error) => {
+        switch (error.response.data.type) {
+          case 'ERROR': {
+            Swal.fire({
+              title: '실패!',
+              text: error.response.data.description,
+              icon: 'error',
+              confirmButtonText: '확인',
+            });
+            break;
+          }
+          default: {
+            const errorDetails = error.response.data.errors;
+            Object.keys(errorDetails).forEach((field) => {
+              setError(field, {
+                type: 'field',
+                message: errorDetails[field],
+              });
+            });
+            break;
+          }
+        }
+      });
   };
 
   return (
@@ -188,6 +214,7 @@ export default function CampaignCreateView() {
                     <TextField
                       {...field}
                       label="MID"
+                      type="number"
                       variant="outlined"
                       error={!!errors.mid}
                       helperText={errors.mid?.message}
@@ -209,6 +236,7 @@ export default function CampaignCreateView() {
                             value={field.value}
                             onChange={field.onChange}
                             minDate={getMinDate()}
+                            error={!!errors.startDate}
                             renderInput={(params) => (
                               <TextField {...params} error={!!errors.startDate} />
                             )}
@@ -278,6 +306,7 @@ export default function CampaignCreateView() {
                       {...field}
                       label="유입요청"
                       variant="outlined"
+                      type="number"
                       error={!!errors.trafficRequest}
                       helperText={errors.trafficRequest?.message}
                       fullWidth

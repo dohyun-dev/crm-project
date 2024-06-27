@@ -3,8 +3,14 @@ const MEMBER = {
   CREATE_URL: () => MEMBER.BASE_URL,
 };
 
+const CAMPAIGN = {
+  BASE_URL: '/api/v1/campaigns',
+  CREATE_URL: () => CAMPAIGN.BASE_URL,
+};
+
 const API_URLS = {
   MEMBER,
+  CAMPAIGN,
 };
 
 export default API_URLS;
