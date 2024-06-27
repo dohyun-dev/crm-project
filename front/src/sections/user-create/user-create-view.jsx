@@ -22,7 +22,7 @@ import {
   FormHelperText,
 } from '@mui/material';
 
-import API from '../../apis/member';
+import API from '../../apis/api';
 import Iconify from '../../components/iconify';
 
 const STRING_MAX_LENGTH = 1024;
@@ -75,7 +75,7 @@ export default function UserCreateView() {
   });
 
   const onSubmit = (data) => {
-    API.MEMBER.createMember(data)
+    API.MEMBER_API.createMember(data)
       .then((response) => {
         Swal.fire({
           title: '성공!',
