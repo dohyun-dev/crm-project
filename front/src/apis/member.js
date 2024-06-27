@@ -6,10 +6,8 @@ const createMember = async (data) => {
   return response.data;
 };
 
-const API = {
-  MEMBER: {
-    createMember,
-  },
+const MEMBER_API = {
+  createMember,
 };
 
-export default API;
+export default MEMBER_API;
