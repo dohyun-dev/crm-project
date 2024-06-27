@@ -21,7 +21,7 @@ public abstract class BaseEntity {
     private Long id;
 
     @CreatedDate
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
