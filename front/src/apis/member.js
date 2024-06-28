@@ -6,8 +6,14 @@ const createMember = async (data) => {
   return response.data;
 };
 
+const fetchMember = async (params) => {
+  const response = await axiosInstance.get(API_URLS.MEMBER.FETCH_MEMBER_URL(), { params });
+  return response.data;
+};
+
 const MEMBER_API = {
   createMember,
+  fetchMember,
 };
 
 export default MEMBER_API;

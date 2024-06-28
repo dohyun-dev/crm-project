@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
@@ -16,7 +15,7 @@ import Iconify from 'src/components/iconify';
 export default function UserTableRow({
   selected,
   id,
-  company,
+  companyName,
   username,
   businessRegistrationNumber,
   email,
@@ -24,7 +23,6 @@ export default function UserTableRow({
   accountHolder,
   createdAt,
   updatedAt,
-  handleClick,
 }) {
   const navigate = useNavigate();
 
@@ -40,22 +38,23 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
-
-        <TableCell>{id}</TableCell>
-        <TableCell>{company}</TableCell>
-        <TableCell>{username}</TableCell>
-        <TableCell>{businessRegistrationNumber}</TableCell>
+      <TableRow
+        hover
+        tabIndex={-1}
+        role="checkbox"
+        selected={selected}
+        sx={{ textAlign: 'center' }}
+      >
+        <TableCell align="center">{id}</TableCell>
+        <TableCell align="center">{companyName}</TableCell>
+        <TableCell align="center">{username}</TableCell>
+        <TableCell align="center">{businessRegistrationNumber}</TableCell>
         <TableCell align="center">{email}</TableCell>
-        <TableCell>{phone}</TableCell>
-        <TableCell>{accountHolder}</TableCell>
-        <TableCell>{new Date(createdAt).toLocaleDateString()}</TableCell>
-        <TableCell>{new Date(updatedAt).toLocaleDateString()}</TableCell>
-
-        <TableCell align="right">
+        <TableCell align="center">{phone}</TableCell>
+        <TableCell align="center">{accountHolder}</TableCell>
+        <TableCell align="center">{new Date(createdAt).toLocaleDateString()}</TableCell>
+        <TableCell align="center">{new Date(updatedAt).toLocaleDateString()}</TableCell>
+        <TableCell align="center">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
@@ -88,7 +87,7 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   id: PropTypes.any,
-  company: PropTypes.string,
+  companyName: PropTypes.string,
   username: PropTypes.string,
   businessRegistrationNumber: PropTypes.any,
   email: PropTypes.string,
@@ -97,5 +96,4 @@ UserTableRow.propTypes = {
   createdAt: PropTypes.any,
   updatedAt: PropTypes.any,
   selected: PropTypes.bool,
-  handleClick: PropTypes.func,
 };

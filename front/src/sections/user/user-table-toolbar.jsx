@@ -12,11 +12,10 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function UserTableToolbar({
-  numSelected,
-  filterName,
-  onFilterName,
   filterType,
   onFilterTypeChange,
+  filterValue,
+  onFilterValueChange,
 }) {
   return (
     <Toolbar
@@ -24,11 +23,6 @@ export default function UserTableToolbar({
         height: 96,
         display: 'flex',
         justifyContent: 'space-between',
-        p: (theme) => theme.spacing(0, 1, 0, 3),
-        ...(numSelected > 0 && {
-          color: 'primary.main',
-          bgcolor: 'primary.lighter',
-        }),
       }}
     >
       <Box>
@@ -41,7 +35,7 @@ export default function UserTableToolbar({
               return <em>전체</em>;
             }
             switch (selected) {
-              case 'name':
+              case 'companyName':
                 return '이름';
               default:
                 return '전체';
@@ -52,11 +46,11 @@ export default function UserTableToolbar({
           <MenuItem value="">
             <em>전체</em>
           </MenuItem>
-          <MenuItem value="name">이름</MenuItem>
+          <MenuItem value="companyName">이름</MenuItem>
         </Select>
         <OutlinedInput
-          value={filterName}
-          onChange={onFilterName}
+          value={filterValue}
+          onChange={onFilterValueChange}
           placeholder="검색하기"
           startAdornment={
             <InputAdornment position="start">
@@ -73,9 +67,8 @@ export default function UserTableToolbar({
 }
 
 UserTableToolbar.propTypes = {
-  numSelected: PropTypes.number,
-  filterName: PropTypes.string,
-  onFilterName: PropTypes.func,
+  filterValue: PropTypes.string,
+  onFilterValueChange: PropTypes.func,
   filterType: PropTypes.string,
   onFilterTypeChange: PropTypes.func,
 };

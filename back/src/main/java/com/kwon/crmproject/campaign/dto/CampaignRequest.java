@@ -4,10 +4,11 @@ import com.kwon.crmproject.campaign.domain.entity.CampaignRewardType;
 import com.kwon.crmproject.campaign.domain.entity.CampaignState;
 import com.kwon.crmproject.common.constant.ValidationProperties;
 import com.kwon.crmproject.common.validator.annotation.MultipleOfFifty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -51,22 +52,12 @@ public abstract class CampaignRequest {
         )
         private String mid;
 
-        @Size(
-                max = ValidationProperties.STRING_MAX_LENGTH,
-                message = ValidationProperties.Message.STRING_MAX_LENGTH
-        )
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         private LocalDate startDate;
 
-        @Size(
-                max = ValidationProperties.STRING_MAX_LENGTH,
-                message = ValidationProperties.Message.STRING_MAX_LENGTH
-        )
-        private int period;
+        private Integer period;
 
-        @Length(
-                max = ValidationProperties.STRING_MAX_LENGTH,
-                message = ValidationProperties.Message.STRING_MAX_LENGTH
-        )
+        @NotNull
         private CampaignRewardType rewardType;
 
         @Size(
@@ -111,18 +102,11 @@ public abstract class CampaignRequest {
         )
         private String mid;
 
-        @Size(
-                max = ValidationProperties.STRING_MAX_LENGTH,
-                message = ValidationProperties.Message.STRING_MAX_LENGTH
-        )
         private LocalDate startDate;
 
-        @Size(
-                max = ValidationProperties.STRING_MAX_LENGTH,
-                message = ValidationProperties.Message.STRING_MAX_LENGTH
-        )
-        private int period;
+        private Integer period;
 
+        @NotNull
         private CampaignRewardType rewardType;
 
         @Size(

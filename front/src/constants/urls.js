@@ -1,6 +1,7 @@
 const MEMBER = {
   BASE_URL: '/api/v1/members',
   CREATE_URL: () => MEMBER.BASE_URL,
+  FETCH_MEMBER_URL: () => MEMBER.BASE_URL,
 };
 
 const CAMPAIGN = {
