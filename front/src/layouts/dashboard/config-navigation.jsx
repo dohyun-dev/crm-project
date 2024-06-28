@@ -14,17 +14,17 @@ const navConfig = [
   },
   {
     title: '플레이스 트래픽',
-    path: '/campaign/place-traffic',
+    path: '/campaign/placeTraffic',
     icon: icon('ic_place_traffic'),
   },
   {
     title: '플레이스 저장하기',
-    path: '/campaign/save-place',
+    path: '/campaign/savePlace',
     icon: icon('ic_save_place'),
   },
   {
     title: '자동완성',
-    path: '/campaign/autocomplete',
+    path: '/campaign/autoComplete',
     icon: icon('ic_autocomplete'),
   },
   {

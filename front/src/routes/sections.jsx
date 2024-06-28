@@ -27,7 +27,7 @@ export default function Router() {
       children: [
         {
           path: '/',
-          element: <Navigate to="/campaign/place-traffic" replace />,
+          element: <Navigate to="/campaign/placeTraffic" replace />,
           index: true,
         },
         { path: 'user', element: <UserPage /> },
