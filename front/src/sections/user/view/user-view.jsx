@@ -20,6 +20,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import UserActionToolbar from '../user-action-toolbar';
+import useTableFilter from '../../../hooks/useTableFilter';
 import useSelectTableData from '../../../hooks/useSelectTableData';
 
 // ----------------------------------------------------------------------
@@ -28,19 +29,19 @@ export default function UserPage() {
   const [page, setPage] = useState(0);
   const [orderBy, setOrderBy] = useState('id');
   const [order, setOrder] = useState('asc');
-  const [filterType, setFilterType] = useState('');
-  const [filterValue, setFilterValue] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [members, setMembers] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(false);
   const { selected, handleClickAllTableRow, handleClickTableRow } = useSelectTableData();
+  const { filterType, filterValue, handleChangeFilterType, handleChangeFilterValue } =
+    useTableFilter(setPage, fetchUsers);
 
   useEffect(() => {
     fetchUsers();
   }, [page, rowsPerPage, order, orderBy]);
 
-  const fetchUsers = (params = {}) => {
+  function fetchUsers(params = {}) {
     setLoading(true);
 
     const requestParams = {
@@ -63,7 +64,7 @@ export default function UserPage() {
         console.error('Error fetching user data:', error);
         setLoading(false);
       });
-  };
+  }
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -80,26 +81,6 @@ export default function UserPage() {
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleChangeFilterType = (event) => {
-    setPage(0);
-    setFilterType(event.target.value);
-    setFilterValue('');
-    fetchUsers({});
-  };
-
-  const handleChangeFilterValue = (event) => {
-    if (!filterType) return;
-    setFilterValue(event.target.value);
-
-    if (!filterType || !event.target.value) {
-      fetchUsers({});
-    } else {
-      fetchUsers({
-        [filterType]: event.target.value,
-      });
-    }
   };
 
   const notFound = !members.length;
