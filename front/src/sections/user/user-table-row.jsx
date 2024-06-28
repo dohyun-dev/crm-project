@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 
@@ -23,6 +24,7 @@ export default function UserTableRow({
   accountHolder,
   createdAt,
   updatedAt,
+  onClick,
 }) {
   const navigate = useNavigate();
 
@@ -42,9 +44,13 @@ export default function UserTableRow({
         hover
         tabIndex={-1}
         role="checkbox"
-        selected={selected}
         sx={{ textAlign: 'center' }}
+        selected={selected}
       >
+        <TableCell padding="checkbox">
+          <Checkbox disableRipple checked={selected} onChange={onClick} />
+        </TableCell>
+
         <TableCell align="center">{id}</TableCell>
         <TableCell align="center">{companyName}</TableCell>
         <TableCell align="center">{username}</TableCell>
@@ -96,4 +102,5 @@ UserTableRow.propTypes = {
   createdAt: PropTypes.any,
   updatedAt: PropTypes.any,
   selected: PropTypes.bool,
+  onClick: PropTypes.func,
 };

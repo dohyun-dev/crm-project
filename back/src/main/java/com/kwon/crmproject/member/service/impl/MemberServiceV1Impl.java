@@ -8,6 +8,7 @@ import com.kwon.crmproject.member.dto.MemberRequest;
 import com.kwon.crmproject.member.service.MemberServiceV1;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +33,10 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
                 .companyName(searchCondition.companyName())
                 .build();
 
-        Example<Member> example = Example.of(exampleMember);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("companyName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+
+        Example<Member> example = Example.of(exampleMember, matcher);
 
         return memberRepository.findAll(example, pageable);
     }

@@ -20,6 +20,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import UserActionToolbar from '../user-action-toolbar';
+import useSelectTableData from '../../../hooks/useSelectTableData';
 
 // ----------------------------------------------------------------------
 
@@ -33,11 +34,10 @@ export default function UserPage() {
   const [members, setMembers] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { selected, handleClickAllTableRow, handleClickTableRow } = useSelectTableData();
 
   useEffect(() => {
     fetchUsers();
-
-    console.log(members);
   }, [page, rowsPerPage, order, orderBy]);
 
   const fetchUsers = (params = {}) => {
@@ -137,6 +137,8 @@ export default function UserPage() {
                 orderBy={orderBy}
                 rowCount={members.length}
                 onRequestSort={handleSort}
+                numSelected={selected.length}
+                onSelectAllClick={(e) => handleClickAllTableRow(e, members)}
                 headLabel={[
                   { id: 'id', label: '회원번호', align: 'center' },
                   { id: 'companyName', label: '업체명', align: 'center' },
@@ -163,6 +165,8 @@ export default function UserPage() {
                     accountHolder={row.accountHolder}
                     createdAt={row.createdAt}
                     updatedAt={row.updatedAt}
+                    selected={selected.indexOf(row.id) !== -1}
+                    onClick={(event) => handleClickTableRow(event, row.id)}
                   />
                 ))}
 
