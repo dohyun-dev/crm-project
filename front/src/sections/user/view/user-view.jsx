@@ -17,6 +17,7 @@ import { emptyRows } from '../utils';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
+import useTable from '../../../hooks/useTable';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import UserActionToolbar from '../user-action-toolbar';
@@ -26,16 +27,27 @@ import useSelectTableData from '../../../hooks/useSelectTableData';
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
-  const [page, setPage] = useState(0);
-  const [orderBy, setOrderBy] = useState('id');
-  const [order, setOrder] = useState('asc');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [members, setMembers] = useState([]);
-  const [totalElements, setTotalElements] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const {
+    page,
+    order,
+    orderBy,
+    rowsPerPage,
+    totalElements,
+    setPage,
+    setTotalElements,
+    handleSort,
+    handleChangePage,
+    handleChangeRowsPerPage,
+  } = useTable();
+
   const { selected, handleClickAllTableRow, handleClickTableRow } = useSelectTableData();
+
   const { filterType, filterValue, handleChangeFilterType, handleChangeFilterValue } =
     useTableFilter(setPage, fetchUsers);
+
+  const [members, setMembers] = useState([]);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -51,8 +63,6 @@ export default function UserPage() {
       ...params,
     };
 
-    console.log(requestParams);
-
     API.MEMBER_API.fetchMember(requestParams)
       .then((response) => {
         console.log(response);
@@ -65,23 +75,6 @@ export default function UserPage() {
         setLoading(false);
       });
   }
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
 
   const notFound = !members.length;
 
