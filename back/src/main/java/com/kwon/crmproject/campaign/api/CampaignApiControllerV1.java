@@ -2,6 +2,7 @@ package com.kwon.crmproject.campaign.api;
 
 import com.kwon.crmproject.campaign.domain.entity.Campaign;
 import com.kwon.crmproject.campaign.dto.CampaignRequest;
+import com.kwon.crmproject.campaign.dto.CampaignResponse;
 import com.kwon.crmproject.campaign.service.CampaignServiceV1;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,8 @@ public class CampaignApiControllerV1 {
     }
 
     @GetMapping
-    public Page<Campaign> findAll(CampaignRequest.SearchCondition searchCondition, Pageable pageable) {
-        return campaignService.findAll(searchCondition, pageable);
+    public Page<CampaignResponse.FindAll> findAll(CampaignRequest.SearchCondition searchCondition, Pageable pageable) {
+        return campaignService.findAll(searchCondition, pageable).map(CampaignResponse.FindAll::new);
     }
 
     @PostMapping
