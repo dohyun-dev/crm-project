@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
@@ -7,8 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Iconify from '../../components/iconify';
 
 export default function CampaignActionToolbar() {
-  const navigate = useNavigate();
-
   return (
     <Toolbar
       sx={{
@@ -62,14 +58,6 @@ export default function CampaignActionToolbar() {
           }}
         >
           엑셀 다운로드
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Iconify icon="eva:person-add-outline" />}
-          onClick={() => navigate('/user/new')}
-        >
-          회원등록
         </Button>
       </Box>
     </Toolbar>

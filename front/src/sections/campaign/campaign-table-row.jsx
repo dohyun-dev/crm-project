@@ -38,15 +38,14 @@ export default function CampaignTableRow({
   selected,
   id,
   state,
-  memberName,
-  reward,
+  rewardType,
   keyword,
   companyName,
   url,
   mid,
   trafficRequest,
   trafficRequestTotal,
-  period,
+  duration,
   startDate,
   endDate,
   handleClick,
@@ -73,7 +72,7 @@ export default function CampaignTableRow({
           <Box
             sx={{
               ...getLabelStyle(state),
-              width: '4.5rem',
+              width: '5rem',
               py: 0.5,
               px: 1,
               borderRadius: 2,
@@ -84,8 +83,8 @@ export default function CampaignTableRow({
             {state}
           </Box>
         </TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{memberName}</TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{reward}</TableCell>
+        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{companyName}</TableCell>
+        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{rewardType}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{keyword}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{companyName}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{url}</TableCell>
@@ -94,7 +93,7 @@ export default function CampaignTableRow({
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
           {trafficRequestTotal}
         </TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{period}</TableCell>
+        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{duration}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{startDate}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{endDate}</TableCell>
 
@@ -133,15 +132,14 @@ CampaignTableRow.propTypes = {
   selected: PropTypes.bool,
   id: PropTypes.any,
   state: PropTypes.string,
-  memberName: PropTypes.string,
-  reward: PropTypes.string,
+  rewardType: PropTypes.string,
   keyword: PropTypes.string,
   companyName: PropTypes.string,
   url: PropTypes.string,
   mid: PropTypes.any,
   trafficRequest: PropTypes.any,
-  trafficRequestTotal: PropTypes.any,
-  period: PropTypes.string,
+  trafficRequestTotal: PropTypes.number,
+  duration: PropTypes.number,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
   handleClick: PropTypes.func,

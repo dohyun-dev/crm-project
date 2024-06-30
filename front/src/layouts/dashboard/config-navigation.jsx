@@ -24,7 +24,7 @@ const navConfig = [
   },
   {
     title: '자동완성',
-    path: '/campaign/autoComplete',
+    path: '/campaign/autocomplete',
     icon: icon('ic_autocomplete'),
   },
   {

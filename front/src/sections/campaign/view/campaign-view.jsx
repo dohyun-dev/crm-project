@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Card from '@mui/material/Card';
@@ -11,18 +11,19 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { users } from 'src/_mock/user';
-
 import Scrollbar from 'src/components/scrollbar';
 
-import TableNoData from '../table-no-data';
+import API from '../../../apis/api';
+import { emptyRows } from '../utils';
+import useTable from '../../../hooks/useTable';
 import TableEmptyRows from '../table-empty-rows';
-import CampaignTableHead from '../user-table-head';
-import { campaigns } from '../../../_mock/campaign';
+import TableNoData from '../../user/table-no-data';
 import CampaignTableRow from '../campaign-table-row';
-import UserTableToolbar from '../user-table-toolbar';
+import UserTableHead from '../../user/user-table-head';
+import useTableFilter from '../../../hooks/useTableFilter';
+import UserTableToolbar from '../../user/user-table-toolbar';
 import CampaignActionToolbar from '../campaign-action-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import useSelectTableData from '../../../hooks/useSelectTableData';
 
 // ----------------------------------------------------------------------
 
@@ -30,81 +31,64 @@ export default function CampaignView() {
   const { type } = useParams();
 
   const headerMap = {
-    'place-traffic': '플레이스 트래픽',
-    'save-place': '플레이스 저장하기',
-    autocomplete: '자동완성',
+    placeTraffic: '플레이스 트래픽',
+    savePlace: '플레이스 저장하기',
+    autoComplete: '자동완성',
   };
 
-  const [page, setPage] = useState(0);
+  const {
+    page,
+    order,
+    orderBy,
+    rowsPerPage,
+    totalElements,
+    setPage,
+    setTotalElements,
+    handleSort,
+    handleChangePage,
+    handleChangeRowsPerPage,
+  } = useTable();
 
-  const [order, setOrder] = useState('asc');
+  const { selected, handleClickAllTableRow, handleClickTableRow } = useSelectTableData();
 
-  const [selected, setSelected] = useState([]);
+  const { filterType, filterValue, handleChangeFilterType, handleChangeFilterValue } =
+    useTableFilter(setPage, () => {});
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [campaigns, setCampaigns] = useState([]);
 
-  const [filterName, setFilterName] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  useEffect(() => {
+    fetchCampaigns();
+  }, [page, rowsPerPage, order, orderBy]);
 
-  console.log(campaigns);
+  function fetchCampaigns(params = {}) {
+    setLoading(true);
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
+    const requestParams = {
+      rewardType: type.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase(),
+      page,
+      size: rowsPerPage,
+      sort: `${orderBy},${order}`,
+      ...params,
+    };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+    console.log(requestParams);
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
+    API.CAMPAIGN_API.fetchCampaign(requestParams)
+      .then((response) => {
+        console.log(response);
+        setCampaigns(response.data.content);
+        setTotalElements(response.data.totalElements);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching user data:', error);
+        setLoading(false);
+      });
+  }
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
-
-  const dataFiltered = applyFilter({
-    inputData: campaigns,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
-
-  const notFound = !dataFiltered.length && !!filterName;
+  const notFound = !campaigns.length;
 
   return (
     <Container maxWidth="xl">
@@ -118,9 +102,10 @@ export default function CampaignView() {
       {/* 콘텐츠 시작 */}
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
+          filterType={filterType}
+          onFilterTypeChange={handleChangeFilterType}
+          filterValue={filterValue}
+          onFilterValueChange={handleChangeFilterValue}
         />
 
         <Divider />
@@ -132,13 +117,13 @@ export default function CampaignView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <CampaignTableHead
+              <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={users.length}
+                rowCount={campaigns.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
+                onSelectAllClick={(e) => handleClickAllTableRow(e, campaigns)}
                 headLabel={[
                   { id: 'state', label: '상태', align: 'center' },
                   { id: 'memberName', label: '회원이름', align: 'center' },
@@ -156,35 +141,32 @@ export default function CampaignView() {
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <CampaignTableRow
-                      key={row.id}
-                      id={row.id}
-                      state={row.state}
-                      memberName={row.memberName}
-                      reward={row.reward}
-                      keyword={row.keyword}
-                      companyName={row.companyName}
-                      url={row.url}
-                      mid={row.mid}
-                      trafficRequest={row.trafficRequest}
-                      trafficRequestTotal={row.trafficRequestTotal}
-                      period={row.period}
-                      startDate={row.startDate}
-                      endDate={row.endDate}
-                      selected={selected.indexOf(row.id) !== -1}
-                      handleClick={(event) => handleClick(event, row.id)}
-                    />
-                  ))}
+                {campaigns.map((row) => (
+                  <CampaignTableRow
+                    key={row.id}
+                    id={row.id}
+                    state={row.state}
+                    rewardType={row.rewardType}
+                    keyword={row.keyword}
+                    companyName={row.companyName}
+                    url={row.url}
+                    mid={row.mid}
+                    trafficRequest={row.trafficRequest}
+                    trafficRequestTotal={row.trafficRequestTotal}
+                    duration={row.duration}
+                    startDate={row.startDate}
+                    endDate={row.endDate}
+                    selected={selected.indexOf(row.id) !== -1}
+                    handleClick={(event) => handleClickTableRow(event, row.id)}
+                  />
+                ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, campaigns.length)}
                 />
 
-                {notFound && <TableNoData query={filterName} />}
+                {notFound && <TableNoData colSpan={14} />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -193,7 +175,7 @@ export default function CampaignView() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
+          count={totalElements}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
