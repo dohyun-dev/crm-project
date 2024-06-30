@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberServiceV1Impl implements MemberServiceV1 {
 
@@ -59,6 +60,7 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
         memberRepository.save(newMember);
     }
 
+    @Transactional
     @Override
     public void edit(Long memberId, MemberRequest.Command request) {
         Member findMember = getMember(memberId);
@@ -88,7 +90,7 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
     }
 
     private String getCurrentOrNewEncodedPassword(String inputPassword, String curPassword) {
-        if (passwordEncoder.matches(inputPassword, curPassword)) {
+        if (inputPassword.equals(curPassword)) {
             return curPassword;
         }
         return passwordEncoder.encode(inputPassword);

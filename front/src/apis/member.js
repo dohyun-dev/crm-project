@@ -6,14 +6,26 @@ const createMember = async (data) => {
   return response.data;
 };
 
+const getMember = async (memberId) => {
+  const response = await axiosInstance.get(API_URLS.MEMBER.GET_MEMBER_URL(memberId));
+  return response.data;
+};
+
 const fetchMember = async (params) => {
   const response = await axiosInstance.get(API_URLS.MEMBER.FETCH_MEMBER_URL(), { params });
   return response.data;
 };
 
+const editMember = async (memberId, data) => {
+  const response = await axiosInstance.put(API_URLS.MEMBER.EDIT_MEMBER_URL(memberId), { ...data });
+  return response.data;
+};
+
 const MEMBER_API = {
   createMember,
+  getMember,
   fetchMember,
+  editMember,
 };
 
 export default MEMBER_API;
