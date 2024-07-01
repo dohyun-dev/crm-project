@@ -174,6 +174,25 @@ export default function CampaignCreateView() {
                       error={!!errors.keyword}
                       helperText={errors.keyword?.message}
                       fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip
+                              title={
+                                <span>
+                                  키워드+노출어 전체입력
+                                  <br />
+                                  Ex)서울맛집 0000
+                                </span>
+                              }
+                            >
+                              <IconButton>
+                                <Iconify icon="eva:question-mark-circle-outline" />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
