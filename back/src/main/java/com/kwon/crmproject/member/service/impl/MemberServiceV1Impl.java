@@ -31,11 +31,11 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
     @Override
     public Page<Member> findAll(MemberRequest.SearchCondition searchCondition, Pageable pageable) {
         Member exampleMember = Member.builder()
-                .companyName(searchCondition.companyName())
+                .name(searchCondition.name())
                 .build();
 
         ExampleMatcher matcher = ExampleMatcher.matching()
-                .withMatcher("companyName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
 
         Example<Member> example = Example.of(exampleMember, matcher);
 
@@ -48,7 +48,7 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
         validateParam(request);
 
         Member newMember = Member.builder()
-                .companyName(request.getCompanyName())
+                .name(request.getName())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .businessRegistrationNumber(request.getBusinessRegistrationNumber())
@@ -68,7 +68,7 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
         String encodedPassword = getCurrentOrNewEncodedPassword(request.getPassword(), findMember.getPassword());
 
         findMember.update(
-                request.getCompanyName(),
+                request.getName(),
                 request.getUsername(),
                 encodedPassword,
                 request.getBusinessRegistrationNumber(),

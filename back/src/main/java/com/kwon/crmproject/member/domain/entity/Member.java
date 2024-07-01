@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Member extends BaseEntity {
 
-    private String companyName;
+    private String name;
     private String username;
     private String password;
     private String businessRegistrationNumber;
@@ -22,12 +22,12 @@ public class Member extends BaseEntity {
 
     @Builder
     public Member(
-            Long id, String companyName, String username,
+            Long id, String name, String username,
             String password, String businessRegistrationNumber,
             String email, String contact, String accountHolder
     ) {
         super(id);
-        this.companyName = companyName;
+        this.name = name;
         this.username = username;
         this.password = password;
         this.businessRegistrationNumber = businessRegistrationNumber;
@@ -37,11 +37,11 @@ public class Member extends BaseEntity {
     }
 
     public void update(
-            String companyName, String username,
+            String name, String username,
             String password, String businessRegistrationNumber,
             String email, String contact, String accountHolder
     ) {
-        this.companyName = companyName;
+        this.name = name;
         this.username = username;
         this.password = password;
         this.businessRegistrationNumber = businessRegistrationNumber;

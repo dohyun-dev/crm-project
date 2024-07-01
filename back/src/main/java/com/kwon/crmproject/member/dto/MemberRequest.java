@@ -9,7 +9,7 @@ import lombok.Data;
 public abstract class MemberRequest {
 
     public record SearchCondition(
-            String companyName
+            String name
     ) {
     }
 
@@ -20,7 +20,7 @@ public abstract class MemberRequest {
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
-        private String companyName;
+        private String name;
 
         @NotBlank
         @Size(
