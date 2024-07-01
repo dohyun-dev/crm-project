@@ -26,8 +26,10 @@ public abstract class CampaignRequest {
 
     @Data
     public static class Create {
-        @NotBlank
-        private String memberName;
+        @NotNull(
+                message = ValidationProperties.Message.MEMBER_ID_FIELD_VALIDATION
+        )
+        private Long memberId;
 
         @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,

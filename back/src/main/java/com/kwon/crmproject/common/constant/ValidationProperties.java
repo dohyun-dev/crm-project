@@ -13,6 +13,7 @@ public interface ValidationProperties {
         String IS_NUMBER_CHECK = "{validation.IS_NUMBER_CHECK_PATTERN}";
         String MULTIPLE_OF_FIFTY = "{validation.MultipleOfFifty}";
 
-        String CONTACT_FIELD_VALIDATION =  "{validation.field.contact}";
+        String CONTACT_FIELD_VALIDATION = "{validation.field.contact}";
+        String MEMBER_ID_FIELD_VALIDATION = "{validation.field.memberId}";
     }
 }

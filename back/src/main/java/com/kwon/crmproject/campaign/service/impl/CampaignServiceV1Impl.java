@@ -53,7 +53,7 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
     @Transactional
     @Override
     public void create(CampaignRequest.Create request) {
-        Member findMember = getMember(request);
+        Member findMember = getMember(request.getMemberId());
 
         validateStartDateAgainstCurrentTime(request.getStartDate());
 
@@ -114,8 +114,8 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
         return startDate.plusDays(period);
     }
 
-    private Member getMember(CampaignRequest.Create request) {
-        return memberRepository.findByName(request.getMemberName())
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> CustomException.of(ErrorType.CAMPAIGN_COMMAND_NOT_FOUND_MEMBER));
     }
 
