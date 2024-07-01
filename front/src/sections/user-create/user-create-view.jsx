@@ -29,9 +29,9 @@ const STRING_MAX_LENGTH = 1024;
 const EXIST_HYPHEN_CHECK_PATTERN = /^[0-9]+$/;
 
 const validationSchema = yup.object().shape({
-  companyName: yup
+  name: yup
     .string()
-    .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+    .max(STRING_MAX_LENGTH, `회원이름은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
     .required('업체명을 입력해주세요.'),
   username: yup
     .string()
@@ -75,6 +75,7 @@ export default function UserCreateView() {
   });
 
   const onSubmit = (data) => {
+    console.log(1111);
     API.MEMBER_API.createMember(data)
       .then((response) => {
         Swal.fire({
@@ -112,7 +113,6 @@ export default function UserCreateView() {
 
   return (
     <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column' }}>
-      {/* 콘텐츠 헤더 시작 */}
       <Stack mb={4}>
         <Box sx={{ display: 'flex' }} justifyContent="space-between" alignItems="center">
           <Typography variant="h4">회원생성</Typography>
@@ -127,7 +127,6 @@ export default function UserCreateView() {
           </Button>
         </Box>
       </Stack>
-      {/* 콘텐츠 헤더 끝 */}
 
       <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
@@ -143,16 +142,14 @@ export default function UserCreateView() {
             <CardContent>
               <Stack p={1} spacing={2}>
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="company">업체명</InputLabel>
+                  <InputLabel htmlFor="name">회원이름</InputLabel>
                   <Controller
-                    name="companyName"
+                    name="name"
                     control={control}
                     defaultValue=""
-                    render={({ field }) => <OutlinedInput {...field} id="company" label="업체명" />}
+                    render={({ field }) => <OutlinedInput {...field} id="name" label="회원이름" />}
                   />
-                  {errors.companyName && (
-                    <FormHelperText error>{errors.companyName.message}</FormHelperText>
-                  )}
+                  {errors.name && <FormHelperText error>{errors.name.message}</FormHelperText>}
                 </FormControl>
 
                 <FormControl fullWidth variant="outlined" size="small">

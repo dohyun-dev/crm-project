@@ -13,14 +13,7 @@ import Divider from '@mui/material/Divider';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import CardHeader from '@mui/material/CardHeader';
-import {
-  InputLabel,
-  CardActions,
-  CardContent,
-  FormControl,
-  OutlinedInput,
-  FormHelperText,
-} from '@mui/material';
+import { TextField, CardActions, CardContent, FormControl } from '@mui/material';
 
 import API from '../../apis/api';
 import Iconify from '../../components/iconify';
@@ -29,10 +22,10 @@ const STRING_MAX_LENGTH = 1024;
 const EXIST_HYPHEN_CHECK_PATTERN = /^[0-9]+$/;
 
 const validationSchema = yup.object().shape({
-  companyName: yup
+  name: yup
     .string()
-    .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .required('업체명을 입력해주세요.'),
+    .max(STRING_MAX_LENGTH, `회원이름은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+    .required('회원이름을 입력해주세요.'),
   username: yup
     .string()
     .max(STRING_MAX_LENGTH, `아이디는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
@@ -88,8 +81,28 @@ export default function UserEditView() {
           setValue(field, memberData[field]);
         });
       })
-      .catch(() => {
-        console.error('유저 정보를 불러오는데 실패');
+      .catch((error) => {
+        switch (error.response.data.type) {
+          case 'ERROR': {
+            Swal.fire({
+              title: '실패!',
+              text: error.response.data.description,
+              icon: 'error',
+              confirmButtonText: '확인',
+            });
+            break;
+          }
+          default: {
+            const errorDetails = error.response.data.errors;
+            Object.keys(errorDetails).forEach((field) => {
+              setError(field, {
+                type: 'field',
+                message: errorDetails[field],
+              });
+            });
+            break;
+          }
+        }
       });
   }
 
@@ -162,106 +175,144 @@ export default function UserEditView() {
             <CardContent>
               <Stack p={1} spacing={2}>
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="company">업체명</InputLabel>
                   <Controller
-                    name="companyName"
+                    name="name"
                     control={control}
                     defaultValue=""
-                    render={({ field }) => <OutlinedInput {...field} id="company" label="업체명" />}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        id="name"
+                        label="회원이름"
+                        variant="outlined"
+                        size="small"
+                        error={!!errors.name}
+                        helperText={errors.name ? errors.name.message : ''}
+                      />
+                    )}
                   />
-                  {errors.companyName && (
-                    <FormHelperText error>{errors.companyName.message}</FormHelperText>
-                  )}
                 </FormControl>
 
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="username">아이디</InputLabel>
                   <Controller
                     name="username"
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <OutlinedInput {...field} id="username" label="아이디" readOnly />
+                      <TextField
+                        {...field}
+                        id="username"
+                        label="아이디"
+                        variant="outlined"
+                        size="small"
+                        error={!!errors.username}
+                        helperText={errors.username ? errors.username.message : ''}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
                     )}
                   />
-                  {errors.username && (
-                    <FormHelperText error>{errors.username.message}</FormHelperText>
-                  )}
                 </FormControl>
 
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="password">비밀번호</InputLabel>
                   <Controller
                     name="password"
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <OutlinedInput {...field} id="password" label="비밀번호" type="password" />
+                      <TextField
+                        {...field}
+                        id="password"
+                        label="비밀번호"
+                        variant="outlined"
+                        size="small"
+                        type="password"
+                        error={!!errors.password}
+                        helperText={errors.password ? errors.password.message : ''}
+                      />
                     )}
                   />
-                  {errors.password && (
-                    <FormHelperText error>{errors.password.message}</FormHelperText>
-                  )}
                 </FormControl>
 
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="businessRegistrationNumber">사업자등록번호</InputLabel>
                   <Controller
                     name="businessRegistrationNumber"
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <OutlinedInput
+                      <TextField
                         {...field}
                         id="businessRegistrationNumber"
                         label="사업자등록번호"
+                        variant="outlined"
+                        size="small"
+                        error={!!errors.businessRegistrationNumber}
+                        helperText={
+                          errors.businessRegistrationNumber
+                            ? errors.businessRegistrationNumber.message
+                            : ''
+                        }
                       />
                     )}
                   />
-                  {errors.businessRegistrationNumber && (
-                    <FormHelperText error>
-                      {errors.businessRegistrationNumber.message}
-                    </FormHelperText>
-                  )}
                 </FormControl>
 
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="email">이메일</InputLabel>
                   <Controller
                     name="email"
                     control={control}
                     defaultValue=""
-                    render={({ field }) => <OutlinedInput {...field} id="email" label="이메일" />}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        id="email"
+                        label="이메일"
+                        variant="outlined"
+                        size="small"
+                        error={!!errors.email}
+                        helperText={errors.email ? errors.email.message : ''}
+                      />
+                    )}
                   />
-                  {errors.email && <FormHelperText error>{errors.email.message}</FormHelperText>}
                 </FormControl>
 
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="contact">연락처</InputLabel>
                   <Controller
                     name="contact"
                     control={control}
                     defaultValue=""
-                    render={({ field }) => <OutlinedInput {...field} id="contact" label="연락처" />}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        id="contact"
+                        label="연락처"
+                        variant="outlined"
+                        size="small"
+                        error={!!errors.contact}
+                        helperText={errors.contact ? errors.contact.message : ''}
+                      />
+                    )}
                   />
-                  {errors.contact && (
-                    <FormHelperText error>{errors.contact.message}</FormHelperText>
-                  )}
                 </FormControl>
 
                 <FormControl fullWidth variant="outlined" size="small">
-                  <InputLabel htmlFor="accountHolder">예금주</InputLabel>
                   <Controller
                     name="accountHolder"
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <OutlinedInput {...field} id="accountHolder" label="예금주" />
+                      <TextField
+                        {...field}
+                        id="accountHolder"
+                        label="예금주"
+                        variant="outlined"
+                        size="small"
+                        error={!!errors.accountHolder}
+                        helperText={errors.accountHolder ? errors.accountHolder.message : ''}
+                      />
                     )}
                   />
-                  {errors.accountHolder && (
-                    <FormHelperText error>{errors.accountHolder.message}</FormHelperText>
-                  )}
                 </FormControl>
               </Stack>
             </CardContent>
