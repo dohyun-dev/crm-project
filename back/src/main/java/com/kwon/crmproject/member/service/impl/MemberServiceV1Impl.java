@@ -99,5 +99,8 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
     private void validateParam(MemberRequest.Command request) {
         if (memberRepository.existsByUsername(request.getUsername()))
             throw CustomException.of(ErrorType.USERNAME_DUPLICATED);
+
+        if (memberRepository.existsByName(request.getName()))
+            throw CustomException.of(ErrorType.MEMBER_NAME_DUPLICATED);
     }
 }
