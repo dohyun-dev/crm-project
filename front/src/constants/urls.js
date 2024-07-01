@@ -10,6 +10,7 @@ const CAMPAIGN = {
   BASE_URL: '/api/v1/campaigns',
   CREATE_URL: () => CAMPAIGN.BASE_URL,
   FETCH_CAMPAIGN_URL: () => CAMPAIGN.BASE_URL,
+  GET_CAMPAIGN_URL: (campaignId) => `${CAMPAIGN.BASE_URL}/${campaignId}`,
 };
 
 const API_URLS = {

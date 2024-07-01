@@ -153,7 +153,7 @@ export default function CampaignView() {
                     mid={row.mid}
                     trafficRequest={row.trafficRequest}
                     trafficRequestTotal={row.trafficRequestTotal}
-                    duration={row.duration}
+                    period={row.period}
                     startDate={row.startDate}
                     endDate={row.endDate}
                     selected={selected.indexOf(row.id) !== -1}

@@ -45,7 +45,7 @@ export default function CampaignTableRow({
   mid,
   trafficRequest,
   trafficRequestTotal,
-  duration,
+  period,
   startDate,
   endDate,
   handleClick,
@@ -93,7 +93,7 @@ export default function CampaignTableRow({
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
           {trafficRequestTotal}
         </TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{duration}</TableCell>
+        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{period}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{startDate}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{endDate}</TableCell>
 

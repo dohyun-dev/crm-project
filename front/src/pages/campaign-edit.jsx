@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import CampaignCreateView from '../sections/campaign-create/campaign-create-view';
+import CampaignEditView from '../sections/campaign-edit/campaign-edit-view';
 
 export default function CampaignEditPage() {
   return (
@@ -9,7 +9,7 @@ export default function CampaignEditPage() {
         <title> User | Minimal UI </title>
       </Helmet>
 
-      <CampaignCreateView />
+      <CampaignEditView />
     </>
   );
 }

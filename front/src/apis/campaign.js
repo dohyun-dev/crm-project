@@ -11,9 +11,15 @@ const fetchCampaign = async (params) => {
   return response.data;
 };
 
+const getCampaign = async (campaignId) => {
+  const response = await axiosInstance.get(API_URLS.CAMPAIGN.GET_CAMPAIGN_URL(campaignId));
+  return response.data;
+};
+
 const CAMPAIGN_API = {
   createCampaign,
   fetchCampaign,
+  getCampaign,
 };
 
 export default CAMPAIGN_API;
