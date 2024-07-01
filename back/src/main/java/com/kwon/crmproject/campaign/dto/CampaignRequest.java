@@ -4,6 +4,7 @@ import com.kwon.crmproject.campaign.domain.entity.CampaignRewardType;
 import com.kwon.crmproject.campaign.domain.entity.CampaignState;
 import com.kwon.crmproject.common.constant.ValidationProperties;
 import com.kwon.crmproject.common.validator.annotation.MultipleOfFifty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,6 +12,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public abstract class CampaignRequest {
 
@@ -24,6 +26,9 @@ public abstract class CampaignRequest {
 
     @Data
     public static class Create {
+        @NotBlank
+        private String memberName;
+
         @Size(
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
@@ -121,5 +126,10 @@ public abstract class CampaignRequest {
         private String trafficRequest;
 
         private CampaignState campaignState;
+    }
+
+    @Data
+    public static class ExtendEndDate {
+        List<Integer> idList;
     }
 }

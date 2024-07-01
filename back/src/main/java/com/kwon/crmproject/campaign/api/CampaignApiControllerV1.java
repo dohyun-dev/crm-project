@@ -18,8 +18,8 @@ public class CampaignApiControllerV1 {
     private final CampaignServiceV1 campaignService;
 
     @GetMapping("/{campaignId}")
-    public Campaign findDetail(@PathVariable("campaignId") Long campaignId) {
-        return campaignService.findDetail(campaignId);
+    public CampaignResponse.FindDetail findDetail(@PathVariable("campaignId") Long campaignId) {
+        return new CampaignResponse.FindDetail(campaignService.findDetail(campaignId));
     }
 
     @GetMapping
@@ -38,6 +38,12 @@ public class CampaignApiControllerV1 {
             @Valid @RequestBody CampaignRequest.Edit request
     ) {
         campaignService.edit(campaignId, request);
+    }
+
+    @PutMapping("/extend-endDate")
+    public void extendEndDate(CampaignRequest.ExtendEndDate request) {
+
+
     }
 
     @DeleteMapping("/{campaignId}")

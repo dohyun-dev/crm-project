@@ -1,6 +1,7 @@
 package com.kwon.crmproject.campaign.domain.entity;
 
 import com.kwon.crmproject.common.entity.BaseEntity;
+import com.kwon.crmproject.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,11 +35,16 @@ public class Campaign extends BaseEntity {
 
     private Integer trafficRequest;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberId")
+    private Member member;
+
     @Builder
     public Campaign(
             Long id, String keyword, String companyName,
             String url, String mid, LocalDate startDate, LocalDate endDate,
-            CampaignState state, CampaignRewardType rewardType, Integer trafficRequest
+            CampaignState state, CampaignRewardType rewardType, Integer trafficRequest,
+            Member member
     ) {
         super(id);
         this.keyword = keyword;
@@ -50,6 +56,7 @@ public class Campaign extends BaseEntity {
         this.state = state;
         this.rewardType = rewardType;
         this.trafficRequest = trafficRequest;
+        this.member = member;
     }
 
     public void update(

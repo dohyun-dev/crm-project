@@ -7,6 +7,9 @@ import com.kwon.crmproject.campaign.dto.CampaignRequest;
 import com.kwon.crmproject.campaign.service.CampaignServiceV1;
 import com.kwon.crmproject.common.exception.CustomException;
 import com.kwon.crmproject.common.exception.ErrorType;
+import com.kwon.crmproject.member.domain.entity.Member;
+import com.kwon.crmproject.member.domain.repository.MemberRepository;
+import com.kwon.crmproject.member.service.MemberServiceV1;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,8 @@ import java.time.LocalDateTime;
 public class CampaignServiceV1Impl implements CampaignServiceV1 {
 
     public static final int VALIDATION_HOUR_THRESHOLD = 16;
+
+    private final MemberRepository memberRepository;
 
     private final CampaignRepository campaignRepository;
 
@@ -48,6 +53,8 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
     @Transactional
     @Override
     public void create(CampaignRequest.Create request) {
+        Member findMember = getMember(request);
+
         validateStartDateAgainstCurrentTime(request.getStartDate());
 
         LocalDate endDate = getEndDate(request.getStartDate(), request.getPeriod());
@@ -62,6 +69,7 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
                 .rewardType(request.getRewardType())
                 .trafficRequest(Integer.parseInt(request.getTrafficRequest()))
                 .state(CampaignState.PENDING_APPROVAL)
+                .member(findMember)
                 .build();
 
         campaignRepository.save(campaign);
@@ -86,6 +94,11 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
     }
 
     @Override
+    public void extendEndDate(CampaignRequest.ExtendEndDate extendEndDate) {
+
+    }
+
+    @Override
     public void delete(Long campaignId) {
         Campaign findCampaign = getCampaign(campaignId);
 
@@ -99,6 +112,11 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
 
     private LocalDate getEndDate(LocalDate startDate, int period) {
         return startDate.plusDays(period);
+    }
+
+    private Member getMember(CampaignRequest.Create request) {
+        return memberRepository.findByName(request.getMemberName())
+                .orElseThrow(() -> CustomException.of(ErrorType.CAMPAIGN_COMMAND_NOT_FOUND_MEMBER));
     }
 
     private void validateStartDateAgainstCurrentTime(LocalDate startDate) {

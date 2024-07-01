@@ -10,5 +10,6 @@ public interface CampaignServiceV1 {
     Page<Campaign> findAll(CampaignRequest.SearchCondition searchCondition, Pageable pageable);
     void create(CampaignRequest.Create request);
     void edit(Long campaignId, CampaignRequest.Edit request);
+    void extendEndDate(CampaignRequest.ExtendEndDate extendEndDate);
     void delete(Long campaignId);
 }
