@@ -23,6 +23,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import {
   Radio,
+  Tooltip,
   RadioGroup,
   FormControl,
   CardActions,
@@ -219,6 +220,17 @@ export default function CampaignCreateView() {
                       error={!!errors.mid}
                       helperText={errors.mid?.message}
                       fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip title="https://m.place.naver.com/place/XXXXXXXX/home (XXXXXXXX 해당된 숫자를 입력하세요)">
+                              <IconButton>
+                                <Iconify icon="eva:question-mark-circle-outline" />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
