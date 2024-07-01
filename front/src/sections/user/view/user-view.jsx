@@ -115,7 +115,7 @@ export default function UserPage() {
                 onSelectAllClick={(e) => handleClickAllTableRow(e, members)}
                 headLabel={[
                   { id: 'id', label: '회원번호', align: 'center' },
-                  { id: 'companyName', label: '업체명', align: 'center' },
+                  { id: 'name', label: '회원이름', align: 'center' },
                   { id: 'username', label: '아이디', align: 'center' },
                   { id: 'businessRegistrationNumber', label: '사업자등록번호', align: 'center' },
                   { id: 'email', label: '이메일', align: 'center' },
@@ -131,7 +131,7 @@ export default function UserPage() {
                   <UserTableRow
                     key={row.id}
                     id={row.id}
-                    companyName={row.companyName}
+                    name={row.name}
                     username={row.username}
                     businessRegistrationNumber={row.businessRegistrationNumber}
                     email={row.email}

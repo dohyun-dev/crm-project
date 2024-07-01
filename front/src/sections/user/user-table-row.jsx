@@ -16,7 +16,7 @@ import Iconify from 'src/components/iconify';
 export default function UserTableRow({
   selected,
   id,
-  companyName,
+  name,
   username,
   businessRegistrationNumber,
   email,
@@ -52,7 +52,7 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell align="center">{id}</TableCell>
-        <TableCell align="center">{companyName}</TableCell>
+        <TableCell align="center">{name}</TableCell>
         <TableCell align="center">{username}</TableCell>
         <TableCell align="center">{businessRegistrationNumber}</TableCell>
         <TableCell align="center">{email}</TableCell>
@@ -93,7 +93,7 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   id: PropTypes.any,
-  companyName: PropTypes.string,
+  name: PropTypes.string,
   username: PropTypes.string,
   businessRegistrationNumber: PropTypes.any,
   email: PropTypes.string,
