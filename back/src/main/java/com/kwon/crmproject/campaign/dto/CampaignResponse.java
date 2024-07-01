@@ -13,6 +13,10 @@ public abstract class CampaignResponse {
     public static class FindDetail {
         private Long id;
 
+        private Long memberId;
+
+        private String memberName;
+
         private String state;
 
         private String companyName;
@@ -37,6 +41,8 @@ public abstract class CampaignResponse {
 
         public FindDetail(Campaign campaign) {
             this.id = campaign.getId();
+            this.memberId = campaign.getMember().getId();
+            this.memberName = campaign.getMember().getName();
             int period = (int) ChronoUnit.DAYS.between(campaign.getStartDate(), campaign.getEndDate()) + 1;
             this.state = campaign.getState().getDescription();
             this.companyName = campaign.getCompanyName();

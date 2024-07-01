@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 
@@ -64,14 +65,14 @@ public class Campaign extends BaseEntity {
             String url, String mid, LocalDate startDate, LocalDate endDate,
             CampaignRewardType rewardType, Integer trafficRequest, CampaignState state
     ) {
-        this.keyword = keyword;
-        this.companyName = companyName;
-        this.url = url;
-        this.mid = mid;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.rewardType = rewardType;
-        this.trafficRequest = trafficRequest;
-        this.state = state;
+        this.keyword = ObjectUtils.isEmpty(keyword) ? this.keyword : keyword;
+        this.companyName = ObjectUtils.isEmpty(companyName) ? this.companyName : companyName;
+        this.url = ObjectUtils.isEmpty(url) ? this.url: url;
+        this.mid = ObjectUtils.isEmpty(mid) ? this.mid: mid;
+        this.startDate = ObjectUtils.isEmpty(startDate) ? this.startDate : startDate;
+        this.endDate = ObjectUtils.isEmpty(endDate) ? this.getEndDate(): endDate;
+        this.rewardType = ObjectUtils.isEmpty(rewardType) ? this.rewardType: rewardType;
+        this.trafficRequest = ObjectUtils.isEmpty(trafficRequest) ? this.trafficRequest: trafficRequest;
+        this.state = ObjectUtils.isEmpty(state) ? this.state: state;
     }
 }

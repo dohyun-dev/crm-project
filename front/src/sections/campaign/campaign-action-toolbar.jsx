@@ -4,7 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 
 import Iconify from '../../components/iconify';
 
-export default function CampaignActionToolbar() {
+export default function CampaignActionToolbar({ onClickExtend }) {
   return (
     <Toolbar
       sx={{
@@ -46,6 +46,20 @@ export default function CampaignActionToolbar() {
       </Box>
 
       <Box display="flex" gap={1}>
+        <Button
+          variant="contained"
+          startIcon={<Iconify icon="mdi:wrench" />}
+          sx={{
+            backgroundColor: '#0052cc',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#003d99',
+            },
+          }}
+          onClick={onClickExtend}
+        >
+          연장하기
+        </Button>
         <Button
           variant="contained"
           startIcon={<Iconify icon="mdi:file-excel-box" />}

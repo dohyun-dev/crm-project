@@ -9,7 +9,6 @@ import com.kwon.crmproject.common.exception.CustomException;
 import com.kwon.crmproject.common.exception.ErrorType;
 import com.kwon.crmproject.member.domain.entity.Member;
 import com.kwon.crmproject.member.domain.repository.MemberRepository;
-import com.kwon.crmproject.member.service.MemberServiceV1;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -75,10 +74,10 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
         campaignRepository.save(campaign);
     }
 
+    @Transactional
     @Override
     public void edit(Long campaignId, CampaignRequest.Edit request) {
         Campaign findCampaign = getCampaign(campaignId);
-        LocalDate endDate = getEndDate(request.getStartDate(), request.getPeriod());
 
         findCampaign.update(
                 request.getKeyword(),
@@ -86,7 +85,7 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
                 request.getUrl(),
                 request.getMid(),
                 request.getStartDate(),
-                endDate,
+                request.getEndDate(),
                 request.getRewardType(),
                 Integer.parseInt(request.getTrafficRequest()),
                 request.getCampaignState()

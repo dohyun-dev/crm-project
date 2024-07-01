@@ -6,6 +6,11 @@ const createCampaign = async (data) => {
   return response.data;
 };
 
+const editCampaign = async (campaignId, data) => {
+  const response = await axiosInstance.put(API_URLS.CAMPAIGN.EDIT_CAMPAIGN_URL(campaignId), data);
+  return response.data;
+};
+
 const fetchCampaign = async (params) => {
   const response = await axiosInstance.get(API_URLS.CAMPAIGN.FETCH_CAMPAIGN_URL(), { params });
   return response.data;
@@ -20,6 +25,7 @@ const CAMPAIGN_API = {
   createCampaign,
   fetchCampaign,
   getCampaign,
+  editCampaign,
 };
 
 export default CAMPAIGN_API;

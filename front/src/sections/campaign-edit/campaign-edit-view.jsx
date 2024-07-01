@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { format } from 'date-fns';
 import { useEffect } from 'react';
+import { ko } from 'date-fns/locale';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -19,6 +20,8 @@ import CardHeader from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { Radio, Tooltip, RadioGroup, CardActions, CardContent, FormControl } from '@mui/material';
 
 import API from '../../apis/api';
@@ -26,14 +29,6 @@ import Iconify from '../../components/iconify';
 
 const STRING_MAX_LENGTH = 1024;
 const NUMBER_CHECK_PATTERN = /^[0-9]+$/;
-
-const getMinDate = () => {
-  const now = dayjs();
-  if (now.hour() < 16) {
-    return now.add(1, 'day').startOf('day');
-  }
-  return now.add(2, 'day').startOf('day');
-};
 
 const validationSchema = yup.object().shape({
   keyword: yup
@@ -52,10 +47,7 @@ const validationSchema = yup.object().shape({
     .string()
     .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
     .required('MID를 입력해주세요.'),
-  startDate: yup
-    .date()
-    .min(getMinDate(), ({ min }) => `시작일은 ${min.format('YYYY-MM-DD')} 이후여야 합니다.`)
-    .required('시작날짜을 입력해주세요.'),
+  startDate: yup.date().required('시작날짜을 입력해주세요.'),
   period: yup
     .number()
     .transform((value, originalValue) => (originalValue === '' ? null : value))
@@ -81,6 +73,7 @@ export default function CampaignEditView() {
     formState: { errors },
     setError,
     setValue,
+    getValues,
   } = useForm({
     mode: 'onChange',
     resolver: yupResolver(validationSchema),
@@ -89,8 +82,8 @@ export default function CampaignEditView() {
       companyName: '',
       url: '',
       mid: '',
-      startDate: '',
-      period: 0,
+      startDate: null,
+      endDate: null,
       rewardType: 'PLACE_TRAFFIC',
       trafficRequest: 0,
     },
@@ -104,23 +97,48 @@ export default function CampaignEditView() {
     API.CAMPAIGN_API.getCampaign(id)
       .then((response) => {
         const campaignData = response.data;
-        console.log(campaignData);
         Object.keys(campaignData).forEach((field) => {
-          setValue(field, campaignData[field] || '');
+          if (field === 'startDate') {
+            setValue(field, campaignData[field] ? dayjs(campaignData[field]) : null);
+          } else {
+            setValue(field, campaignData[field] || '');
+          }
         });
       })
-      .catch(() => {
-        console.error('캠페인 정보를 불러오는데 실패');
+      .catch((error) => {
+        switch (error.response.data.type) {
+          case 'ERROR': {
+            Swal.fire({
+              title: '실패!',
+              text: error.response.data.description,
+              icon: 'error',
+              confirmButtonText: '확인',
+            });
+            break;
+          }
+          default: {
+            const errorDetails = error.response.data.errors;
+            Object.keys(errorDetails).forEach((field) => {
+              setError(field, {
+                type: 'field',
+                message: errorDetails[field],
+              });
+            });
+            break;
+          }
+        }
       });
   }
 
   const onSubmit = (data) => {
+    console.log(111);
     data.startDate = data.startDate ? format(new Date(data.startDate), 'yyyy-MM-dd') : null;
-    API.CAMPAIGN_API.createCampaign(data)
+    data.endDate = data.endDate ? format(new Date(data.endDate), 'yyyy-MM-dd') : null;
+    API.CAMPAIGN_API.editCampaign(campaignId, data)
       .then(() => {
         Swal.fire({
           title: '성공!',
-          text: '캠페인 등록에 성공했습니다.',
+          text: '캠페인 수정이 완료되었습니다.',
           icon: 'success',
           confirmButtonText: '확인',
         });
@@ -181,206 +199,237 @@ export default function CampaignEditView() {
 
             <CardContent>
               <Stack p={1} spacing={2}>
-                <Controller
-                  name="keyword"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="키워드"
-                      variant="outlined"
-                      error={!!errors.keyword}
-                      helperText={errors.keyword?.message}
-                      fullWidth
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Tooltip
-                              title={
-                                <span>
-                                  키워드+노출어 전체입력
-                                  <br />
-                                  Ex)서울맛집 0000
-                                </span>
-                              }
-                            >
-                              <IconButton>
-                                <Iconify icon="eva:question-mark-circle-outline" />
-                              </IconButton>
-                            </Tooltip>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
+                <FormControl>
+                  <Controller
+                    name="keyword"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="키워드"
+                        variant="outlined"
+                        error={!!errors.keyword}
+                        helperText={errors.keyword?.message}
+                        fullWidth
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip
+                                title={
+                                  <span>
+                                    키워드+노출어 전체입력
+                                    <br />
+                                    Ex)서울맛집 0000
+                                  </span>
+                                }
+                              >
+                                <IconButton>
+                                  <Iconify icon="eva:question-mark-circle-outline" />
+                                </IconButton>
+                              </Tooltip>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
 
-                <Controller
-                  name="companyName"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="업체명"
-                      variant="outlined"
-                      error={!!errors.companyName}
-                      helperText={errors.companyName?.message}
-                      fullWidth
-                    />
-                  )}
-                />
+                <FormControl>
+                  <Controller
+                    name="companyName"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="업체명"
+                        variant="outlined"
+                        error={!!errors.companyName}
+                        helperText={errors.companyName?.message}
+                        fullWidth
+                      />
+                    )}
+                  />
+                </FormControl>
 
-                <Controller
-                  name="url"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="URL"
-                      variant="outlined"
-                      error={!!errors.url}
-                      helperText={errors.url?.message}
-                      fullWidth
-                    />
-                  )}
-                />
+                <FormControl>
+                  <Controller
+                    name="url"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="URL"
+                        variant="outlined"
+                        error={!!errors.url}
+                        helperText={errors.url?.message}
+                        fullWidth
+                      />
+                    )}
+                  />
+                </FormControl>
 
-                <Controller
-                  name="mid"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="MID"
-                      type="number"
-                      variant="outlined"
-                      error={!!errors.mid}
-                      helperText={errors.mid?.message}
-                      fullWidth
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Tooltip title="https://m.place.naver.com/place/XXXXXXXX/home (XXXXXXXX 해당된 숫자를 입력하세요)">
-                              <IconButton>
-                                <Iconify icon="eva:question-mark-circle-outline" />
-                              </IconButton>
-                            </Tooltip>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
+                <FormControl>
+                  <Controller
+                    name="mid"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="MID"
+                        type="number"
+                        variant="outlined"
+                        error={!!errors.mid}
+                        helperText={errors.mid?.message}
+                        fullWidth
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title="https://m.place.naver.com/place/XXXXXXXX/home (XXXXXXXX 해당된 숫자를 입력하세요)">
+                                <IconButton>
+                                  <Iconify icon="eva:question-mark-circle-outline" />
+                                </IconButton>
+                              </Tooltip>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
 
                 <Typography variant="subtitle2">기간</Typography>
                 <Box display="flex">
-                  <Controller
-                    name="startDate"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="시작날짜"
-                        type="text"
-                        variant="outlined"
-                        error={!!errors.startDate}
-                        helperText={errors.startDate?.message}
-                        fullWidth
-                        InputProps={{
-                          readOnly: true,
+                  <FormControl fullWidth variant="outlined">
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={ko}>
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        render={({ field }) => {
+                          const endDate = getValues('endDate');
+                          const maxStartDate = endDate ? dayjs(endDate).subtract(1, 'day') : null;
+                          return (
+                            <DatePicker
+                              label="시작 날짜"
+                              format="YYYY-MM-DD"
+                              value={field.value ? dayjs(field.value) : null}
+                              onChange={(newValue) => field.onChange(newValue)}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  error={!!errors.startDate}
+                                  helperText={errors.startDate?.message}
+                                />
+                              )}
+                              maxDate={maxStartDate}
+                            />
+                          );
                         }}
                       />
-                    )}
-                  />
+                    </LocalizationProvider>
+                  </FormControl>
 
-                  <Controller
-                    name="period"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="기간"
-                        type="number"
-                        variant="outlined"
-                        error={!!errors.period}
-                        helperText={errors.period?.message}
-                        InputProps={{
-                          endAdornment: <InputAdornment position="end">일</InputAdornment>,
+                  <FormControl fullWidth variant="outlined" sx={{ ml: 2 }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={ko}>
+                      <Controller
+                        name="endDate"
+                        control={control}
+                        render={({ field }) => {
+                          const startDate = getValues('startDate');
+                          const minEndDate = startDate ? dayjs(startDate).add(1, 'day') : null;
+                          return (
+                            <DatePicker
+                              label="종료 날짜"
+                              format="YYYY-MM-DD"
+                              value={field.value ? dayjs(field.value) : null}
+                              onChange={(newValue) => field.onChange(newValue)}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  error={!!errors.endDate}
+                                  helperText={errors.endDate?.message}
+                                />
+                              )}
+                              minDate={minEndDate}
+                            />
+                          );
                         }}
                       />
-                    )}
-                  />
+                    </LocalizationProvider>
+                  </FormControl>
                 </Box>
 
                 <Typography variant="subtitle2">리워드</Typography>
-                <Controller
-                  name="rewardType"
-                  defaultValue=""
-                  control={control}
-                  defaultValue="PLACE_TRAFFIC"
-                  render={({ field }) => (
-                    <FormControl component="fieldset" fullWidth variant="outlined" size="medium">
-                      <RadioGroup {...field}>
-                        <FormControlLabel
-                          value="PLACE_TRAFFIC"
-                          control={<Radio />}
-                          label="플레이스 트래픽"
-                        />
-                        <FormControlLabel
-                          value="SAVE_PLACE"
-                          control={<Radio />}
-                          label="플레이스 저장하기"
-                        />
-                        <FormControlLabel
-                          value="AUTOCOMPLETE"
-                          control={<Radio />}
-                          label="자동 완성"
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  )}
-                />
+                <FormControl>
+                  <Controller
+                    name="rewardType"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl component="fieldset" fullWidth variant="outlined" size="medium">
+                        <RadioGroup {...field}>
+                          <FormControlLabel
+                            value="PLACE_TRAFFIC"
+                            control={<Radio />}
+                            label="플레이스 트래픽"
+                          />
+                          <FormControlLabel
+                            value="SAVE_PLACE"
+                            control={<Radio />}
+                            label="플레이스 저장하기"
+                          />
+                          <FormControlLabel
+                            value="AUTOCOMPLETE"
+                            control={<Radio />}
+                            label="자동 완성"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    )}
+                  />
+                </FormControl>
 
-                <Controller
-                  name="trafficRequest"
-                  control={control}
-                  defaultValue={0}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="유입요청"
-                      variant="outlined"
-                      type="number"
-                      error={!!errors.trafficRequest}
-                      helperText={errors.trafficRequest?.message}
-                      fullWidth
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Box display="flex" flexDirection="column">
-                              <IconButton
-                                size="small"
-                                sx={{ p: 0 }}
-                                onClick={() => field.onChange(parseInt(field.value || 0) + 50)}
-                              >
-                                <Iconify icon="eva:arrow-up-outline" />
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                sx={{ p: 0 }}
-                                onClick={() =>
-                                  field.onChange(Math.max(0, parseInt(field.value || 0) - 50))
-                                }
-                              >
-                                <Iconify icon="eva:arrow-down-outline" />
-                              </IconButton>
-                            </Box>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
+                <FormControl>
+                  <Controller
+                    name="trafficRequest"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="유입요청"
+                        variant="outlined"
+                        type="number"
+                        error={!!errors.trafficRequest}
+                        helperText={errors.trafficRequest?.message}
+                        fullWidth
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Box display="flex" flexDirection="column">
+                                <IconButton
+                                  size="small"
+                                  sx={{ p: 0 }}
+                                  onClick={() => field.onChange(parseInt(field.value || 0) + 50)}
+                                >
+                                  <Iconify icon="eva:arrow-up-outline" />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  sx={{ p: 0 }}
+                                  onClick={() =>
+                                    field.onChange(Math.max(0, parseInt(field.value || 0) - 50))
+                                  }
+                                >
+                                  <Iconify icon="eva:arrow-down-outline" />
+                                </IconButton>
+                              </Box>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
               </Stack>
             </CardContent>
 

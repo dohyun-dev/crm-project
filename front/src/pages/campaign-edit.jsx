@@ -6,7 +6,7 @@ export default function CampaignEditPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> 캠페인 수정 </title>
       </Helmet>
 
       <CampaignEditView />
