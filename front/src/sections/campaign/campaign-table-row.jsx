@@ -38,6 +38,7 @@ export default function CampaignTableRow({
   selected,
   id,
   state,
+  memberName,
   rewardType,
   keyword,
   companyName,
@@ -64,11 +65,17 @@ export default function CampaignTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
+      <TableRow
+        hover
+        tabIndex={-1}
+        role="checkbox"
+        sx={{ textAlign: 'center' }}
+        selected={selected}
+      >
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
           <Box
             sx={{
               ...getLabelStyle(state),
@@ -83,7 +90,7 @@ export default function CampaignTableRow({
             {state}
           </Box>
         </TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{companyName}</TableCell>
+        <TableCell>{memberName}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{rewardType}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{keyword}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{companyName}</TableCell>
@@ -132,6 +139,7 @@ CampaignTableRow.propTypes = {
   selected: PropTypes.bool,
   id: PropTypes.any,
   state: PropTypes.string,
+  memberName: PropTypes.string,
   rewardType: PropTypes.string,
   keyword: PropTypes.string,
   companyName: PropTypes.string,
@@ -139,7 +147,7 @@ CampaignTableRow.propTypes = {
   mid: PropTypes.any,
   trafficRequest: PropTypes.any,
   trafficRequestTotal: PropTypes.number,
-  duration: PropTypes.number,
+  period: PropTypes.number,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
   handleClick: PropTypes.func,

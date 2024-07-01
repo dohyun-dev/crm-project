@@ -88,6 +88,8 @@ export default function CampaignView() {
       });
   }
 
+  const handleClickExtend = () => {};
+
   const notFound = !campaigns.length;
 
   return (
@@ -146,6 +148,7 @@ export default function CampaignView() {
                     key={row.id}
                     id={row.id}
                     state={row.state}
+                    memberName={row.memberName}
                     rewardType={row.rewardType}
                     keyword={row.keyword}
                     companyName={row.companyName}
