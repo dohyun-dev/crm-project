@@ -6,7 +6,7 @@ export default function CampaignCreatePage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> 캠페인 등록 </title>
       </Helmet>
 
       <CampaignCreateView />
