@@ -77,6 +77,8 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
                 request.getAccountHolder()
         );
     }
+
+    @Transactional
     @Override
     public void delete(Long memberId) {
         Member findMember = getMember(memberId);
