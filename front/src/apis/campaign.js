@@ -21,11 +21,35 @@ const getCampaign = async (campaignId) => {
   return response.data;
 };
 
+const deleteCampaign = async (campaignId) => {
+  const response = await axiosInstance.delete(API_URLS.CAMPAIGN.DELETE_CAMPAIGN_URL(campaignId));
+  return response.data;
+};
+
+const changeCampaignState = async (campaignIds, campaignState) => {
+  const response = await axiosInstance.put(API_URLS.CAMPAIGN.CHANGE_STATE_URL(), {
+    campaignIds,
+    campaignState,
+  });
+  return response.data;
+};
+
+const extend = async (campaignIds, extendDays) => {
+  const response = await axiosInstance.put(API_URLS.CAMPAIGN.EXTEND_URL(), {
+    campaignIds,
+    extendDays,
+  });
+  return response.data;
+};
+
 const CAMPAIGN_API = {
   createCampaign,
   fetchCampaign,
   getCampaign,
   editCampaign,
+  deleteCampaign,
+  changeCampaignState,
+  extend,
 };
 
 export default CAMPAIGN_API;
