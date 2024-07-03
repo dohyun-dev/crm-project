@@ -21,11 +21,17 @@ const editMember = async (memberId, data) => {
   return response.data;
 };
 
+const deleteMember = async (memberId) => {
+  const response = await axiosInstance.delete(API_URLS.MEMBER.DELETE_MEMBER_URL(memberId));
+  return response.data;
+};
+
 const MEMBER_API = {
   createMember,
   getMember,
   fetchMember,
   editMember,
+  deleteMember,
 };
 
 export default MEMBER_API;
