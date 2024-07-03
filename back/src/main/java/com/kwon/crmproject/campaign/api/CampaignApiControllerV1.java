@@ -1,6 +1,5 @@
 package com.kwon.crmproject.campaign.api;
 
-import com.kwon.crmproject.campaign.domain.entity.Campaign;
 import com.kwon.crmproject.campaign.dto.CampaignRequest;
 import com.kwon.crmproject.campaign.dto.CampaignResponse;
 import com.kwon.crmproject.campaign.service.CampaignServiceV1;
@@ -40,10 +39,19 @@ public class CampaignApiControllerV1 {
         campaignService.edit(campaignId, request);
     }
 
-    @PutMapping("/extend-endDate")
-    public void extendEndDate(CampaignRequest.ExtendEndDate request) {
+    @PutMapping("/change-state")
+    public void changeState(
+            @Valid @RequestBody CampaignRequest.ChangeState request
+    ) {
+        campaignService.changeState(request.getCampaignIds(), request.getCampaignState());
+    }
 
 
+    @PutMapping("/extend")
+    public void extend(
+            @Valid @RequestBody CampaignRequest.Extend request
+    ) {
+        campaignService.extendEndDate(request.getCampaignIds(), request.getExtendDays());
     }
 
     @DeleteMapping("/{campaignId}")
