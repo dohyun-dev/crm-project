@@ -2,6 +2,7 @@ package com.kwon.crmproject.member.api;
 
 import com.kwon.crmproject.member.domain.entity.Member;
 import com.kwon.crmproject.member.dto.MemberRequest;
+import com.kwon.crmproject.member.dto.MemberResponse;
 import com.kwon.crmproject.member.service.MemberServiceV1;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,8 @@ public class MemberApiControllerV1 {
     }
 
     @GetMapping
-    public Page<Member> findAll(MemberRequest.SearchCondition searchCondition, Pageable pageable) {
-        return memberService.findAll(searchCondition, pageable);
+    public Page<MemberResponse.FindAll> findAll(MemberRequest.SearchCondition searchCondition, Pageable pageable) {
+        return memberService.findAll(searchCondition, pageable).map(MemberResponse.FindAll::new);
     }
 
     @PostMapping
