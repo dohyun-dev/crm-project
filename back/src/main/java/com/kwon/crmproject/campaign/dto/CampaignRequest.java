@@ -132,7 +132,17 @@ public abstract class CampaignRequest {
     }
 
     @Data
-    public static class ExtendEndDate {
-        List<Integer> idList;
+    public static class ChangeState {
+        @NotNull
+        private List<Long> campaignIds;
+        @NotNull
+        private CampaignState campaignState;
+    }
+
+    @Data
+    public static class Extend {
+        @NotNull
+        private List<Long> campaignIds;
+        private int extendDays;
     }
 }
