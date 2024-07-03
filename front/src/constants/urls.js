@@ -4,6 +4,7 @@ const MEMBER = {
   FETCH_MEMBER_URL: () => MEMBER.BASE_URL,
   GET_MEMBER_URL: (memberId) => `${MEMBER.BASE_URL}/${memberId}`,
   EDIT_MEMBER_URL: (memberId) => `${MEMBER.BASE_URL}/${memberId}`,
+  DELETE_MEMBER_URL: (memberId) => `${MEMBER.BASE_URL}/${memberId}`,
 };
 
 const CAMPAIGN = {
@@ -12,6 +13,9 @@ const CAMPAIGN = {
   FETCH_CAMPAIGN_URL: () => CAMPAIGN.BASE_URL,
   GET_CAMPAIGN_URL: (campaignId) => `${CAMPAIGN.BASE_URL}/${campaignId}`,
   EDIT_CAMPAIGN_URL: (campaignId) => `${CAMPAIGN.BASE_URL}/${campaignId}`,
+  DELETE_CAMPAIGN_URL: (campaignId) => `${CAMPAIGN.BASE_URL}/${campaignId}`,
+  CHANGE_STATE_URL: () => `${CAMPAIGN.BASE_URL}/change-state`,
+  EXTEND_URL: () => `${CAMPAIGN.BASE_URL}/extend`,
 };
 
 const API_URLS = {
