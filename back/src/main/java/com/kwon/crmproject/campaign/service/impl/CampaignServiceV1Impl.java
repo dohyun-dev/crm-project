@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -92,11 +93,23 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
         );
     }
 
+    @Transactional
     @Override
-    public void extendEndDate(CampaignRequest.ExtendEndDate extendEndDate) {
+    public void changeState(List<Long> campaignIds, CampaignState state) {
+        List<Campaign> campaigns = campaignRepository.findByIdIn(campaignIds);
 
+        campaigns.forEach((c) -> c.changeState(state));
     }
 
+    @Transactional
+    @Override
+    public void extendEndDate(List<Long> campaignIds, int extendDays) {
+        List<Campaign> campaigns = campaignRepository.findByIdIn(campaignIds);
+
+        campaigns.forEach((c) -> c.extendEndDate(extendDays));
+    }
+
+    @Transactional
     @Override
     public void delete(Long campaignId) {
         Campaign findCampaign = getCampaign(campaignId);
