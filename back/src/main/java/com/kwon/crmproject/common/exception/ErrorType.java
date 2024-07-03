@@ -15,6 +15,9 @@ public enum ErrorType {
     CAMPAIGN_START_DATE_INVALID_BEFORE_16(HttpStatus.BAD_REQUEST, "현재 시간은 16시 이전이므로, 시작 날짜는 내일부터 등록 가능합니다."),
     CAMPAIGN_START_DATE_INVALID_AFTER_16(HttpStatus.BAD_REQUEST, "현재 시간은 16시 이후이므로, 시작 날짜는 2일 후부터 등록 가능합니다."),
     CAMPAIGN_COMMAND_NOT_FOUND_MEMBER(HttpStatus.BAD_REQUEST, "회원 정보를 찾을 수 없어 요청이 취소됩니다. 다시 시도해주세요."),
+    CAMPAIGN_STATE_IS_SAME_STATE(HttpStatus.BAD_REQUEST, "변경하려는 캠페인 상태가 현재와 동일합니다."),
+    CAMPAIGN_STATE_IS_COMPLETE(HttpStatus.BAD_REQUEST, "종료된 캠페인이 존재해 요청이 거부되었습니다."),
+    CAMPAIGN_SHUTDOWN_REJECT_BY_NONE_START_CAMPAIGN(HttpStatus.BAD_REQUEST, "아직 시작되지 않은 캠페인이 존재해 캠페인을 종료할 수 없습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,  "서버에 문제가 발생하였습니다. 잠시후 다시 시도해주세요");
 
