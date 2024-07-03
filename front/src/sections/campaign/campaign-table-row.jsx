@@ -49,7 +49,8 @@ export default function CampaignTableRow({
   period,
   startDate,
   endDate,
-  handleClick,
+  onClick,
+  onClickDelete,
 }) {
   const navigate = useNavigate();
 
@@ -73,7 +74,7 @@ export default function CampaignTableRow({
         selected={selected}
       >
         <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+          <Checkbox disableRipple checked={selected} onChange={onClick} />
         </TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
           <Box
@@ -126,7 +127,7 @@ export default function CampaignTableRow({
           수정
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={onClickDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           삭제
         </MenuItem>
@@ -150,5 +151,6 @@ CampaignTableRow.propTypes = {
   period: PropTypes.number,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
-  handleClick: PropTypes.func,
+  onClick: PropTypes.func,
+  onClickDelete: PropTypes.func,
 };

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Card from '@mui/material/Card';
@@ -24,6 +25,9 @@ import useTableFilter from '../../../hooks/useTableFilter';
 import UserTableToolbar from '../../user/user-table-toolbar';
 import CampaignActionToolbar from '../campaign-action-toolbar';
 import useSelectTableData from '../../../hooks/useSelectTableData';
+import CampaignExtendModal from '../campaign-extend-modal';
+import * as XLSX from 'xlsx';
+import campaign from '../../../apis/campaign';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +37,7 @@ export default function CampaignView() {
   const headerMap = {
     placeTraffic: '플레이스 트래픽',
     savePlace: '플레이스 저장하기',
-    autoComplete: '자동완성',
+    autocomplete: '자동완성',
   };
 
   const {
@@ -58,9 +62,11 @@ export default function CampaignView() {
 
   const [loading, setLoading] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
     fetchCampaigns();
-  }, [page, rowsPerPage, order, orderBy]);
+  }, [type, page, rowsPerPage, order, orderBy]);
 
   function fetchCampaigns(params = {}) {
     setLoading(true);
@@ -88,7 +94,147 @@ export default function CampaignView() {
       });
   }
 
-  const handleClickExtend = () => {};
+  const handleClickDelete = (campaignId) => {
+    Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        API.CAMPAIGN_API.deleteCampaign(campaignId)
+          .then(() => {
+            Swal.fire({
+              title: '성공!',
+              text: '캠페인이 삭제되었습니다.',
+              icon: 'success',
+              confirmButtonText: '확인',
+            });
+            fetchCampaigns();
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: '실패!',
+              text: error.response.data.description,
+              icon: 'error',
+              confirmButtonText: '확인',
+            });
+          });
+      }
+    });
+  };
+
+  // 승인완료
+  const changeCampaignState = (campaignState, successMessage) => {
+    API.CAMPAIGN_API.changeCampaignState(selected, campaignState)
+      .then(() => {
+        Swal.fire({
+          title: '성공!',
+          text: successMessage,
+          icon: 'success',
+          confirmButtonText: '확인',
+        });
+        fetchCampaigns();
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: '실패!',
+          text: error.response.data.description,
+          icon: 'error',
+          confirmButtonText: '확인',
+        });
+      });
+  };
+
+  // 승인 완료
+  const handleClickApprove = () => {
+    changeCampaignState('IN_PROGRESS', '캠페인이 승인되었습니다.');
+  };
+
+  // 강제 종료
+  const handleForcedShutdown = () => {
+    changeCampaignState('COMPLETED', '캠페인이 종료되었습니다.');
+  };
+
+  const handleClickExtend = () => {
+    if (selected.length === 0) return;
+    setIsModalOpen(true);
+  };
+
+  const handleClickCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleClickExtendSubmit = (data) => {
+    const { extendDays } = data;
+    handleClickCloseModal();
+    API.CAMPAIGN_API.extend(selected, extendDays)
+      .then(() => {
+        Swal.fire({
+          title: '성공!',
+          text: `${extendDays}일 연장되었습니다.`,
+          icon: 'success',
+          confirmButtonText: '확인',
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: '실패!',
+          text: error.response.data.description,
+          icon: 'error',
+          confirmButtonText: '확인',
+        });
+      });
+    fetchCampaigns();
+  };
+
+  const handleClickExcelDownload = () => {
+    // 더미 데이터 생성 (실제 데이터로 교체 필요)
+    const data = campaigns
+      .filter((campaign) => selected.includes(campaign.id))
+      .map((campaign) => {
+        return {
+          state: campaign.state,
+          memberName: campaign.memberName,
+          reward: `${headerMap[type]}`,
+          keyword: campaign.keyword,
+          companyName: campaign.companyName,
+          url: campaign.url,
+          trafficRequest: campaign.trafficRequest,
+          trafficRequestTotal: campaign.trafficRequestTotal,
+          startDate: campaign.startDate,
+          endDate: campaign.endDate,
+        };
+      });
+
+    const headers = [
+      {
+        state: '상태',
+        memberName: '회원이름',
+        reward: `리워드`,
+        keyword: '키워드',
+        companyName: '업체명',
+        url: 'URL',
+        trafficRequest: '유입요청',
+        trafficRequestTotal: '유입요청(전체)',
+        startDate: '시작일시',
+        endDate: '종료일시',
+      },
+    ];
+
+    const combinedData = [...headers, ...data];
+
+    // 워크시트 생성
+    const ws = XLSX.utils.json_to_sheet(combinedData, { skipHeader: true });
+
+    // 워크북 생성
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws);
+
+    // 엑셀 파일 생성 및 다운로드
+    XLSX.writeFile(wb, `${headerMap[type]} 목록.xlsx`);
+  };
 
   const notFound = !campaigns.length;
 
@@ -100,7 +246,6 @@ export default function CampaignView() {
         <Typography variant="h4">{headerMap[type]}</Typography>
       </Stack>
       {/* 콘텐츠 헤더 끝 */}
-
       {/* 콘텐츠 시작 */}
       <Card>
         <UserTableToolbar
@@ -112,9 +257,13 @@ export default function CampaignView() {
 
         <Divider />
 
-        <CampaignActionToolbar />
+        <CampaignActionToolbar
+          onClickApprove={handleClickApprove}
+          onClickShutdown={handleForcedShutdown}
+          onClickExtend={handleClickExtend}
+          onClickExcelDownload={handleClickExcelDownload}
+        />
       </Card>
-
       <Card sx={{ mt: 4 }}>
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -134,8 +283,8 @@ export default function CampaignView() {
                   { id: 'companyName', label: '업체명', align: 'center' },
                   { id: 'url', label: 'URL', align: 'center' },
                   { id: 'mid', label: 'MID', align: 'center' },
-                  { id: 'inflowRequest', label: '유입요청', align: 'center' },
-                  { id: 'inflowRequestTotal', label: '유입요청(전체)', align: 'center' },
+                  { id: 'trafficRequest', label: '유입요청', align: 'center' },
+                  { id: 'trafficRequestTotal', label: '유입요청(전체)', align: 'center' },
                   { id: 'period', label: '기간', align: 'center' },
                   { id: 'startDate', label: '시작일시', align: 'center' },
                   { id: 'endDate', label: '종료일시', align: 'center' },
@@ -160,7 +309,8 @@ export default function CampaignView() {
                     startDate={row.startDate}
                     endDate={row.endDate}
                     selected={selected.indexOf(row.id) !== -1}
-                    handleClick={(event) => handleClickTableRow(event, row.id)}
+                    onClick={(event) => handleClickTableRow(event, row.id)}
+                    onClickDelete={() => handleClickDelete(row.id)}
                   />
                 ))}
 
@@ -184,8 +334,12 @@ export default function CampaignView() {
           rowsPerPageOptions={[5, 10, 25]}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
+        <CampaignExtendModal
+          isModalOpen={isModalOpen}
+          onClickCloseModal={handleClickCloseModal}
+          onSubmit={handleClickExtendSubmit}
+        />
       </Card>
-      {/* 콘텐츠 끝 */}
     </Container>
   );
 }

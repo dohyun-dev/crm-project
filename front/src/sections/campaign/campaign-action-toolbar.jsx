@@ -1,10 +1,17 @@
+import * as propsType from 'prop-types';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 
 import Iconify from '../../components/iconify';
 
-export default function CampaignActionToolbar({ onClickExtend }) {
+export default function CampaignActionToolbar({
+  onClickApprove,
+  onClickShutdown,
+  onClickExtend,
+  onClickExcelDownload,
+}) {
   return (
     <Toolbar
       sx={{
@@ -27,6 +34,7 @@ export default function CampaignActionToolbar({ onClickExtend }) {
               backgroundColor: 'success.dark', // 팔레트에서 success.dark 색상 사용
             },
           }}
+          onClick={onClickApprove}
         >
           승인완료
         </Button>
@@ -40,6 +48,7 @@ export default function CampaignActionToolbar({ onClickExtend }) {
               backgroundColor: 'error.dark',
             },
           }}
+          onClick={onClickShutdown}
         >
           강제종료
         </Button>
@@ -70,6 +79,7 @@ export default function CampaignActionToolbar({ onClickExtend }) {
               backgroundColor: '#1e5e37',
             },
           }}
+          onClick={onClickExcelDownload}
         >
           엑셀 다운로드
         </Button>
@@ -78,4 +88,9 @@ export default function CampaignActionToolbar({ onClickExtend }) {
   );
 }
 
-CampaignActionToolbar.propTypes = {};
+CampaignActionToolbar.propTypes = {
+  onClickApprove: propsType.func,
+  onClickShutdown: propsType.func,
+  onClickExtend: propsType.func,
+  onCLickExcelDownload: propsType.func,
+};
