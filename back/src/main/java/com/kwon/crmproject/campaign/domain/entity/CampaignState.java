@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum CampaignState {
     PENDING_APPROVAL("승인요청"),
-    IN_PROGRESS("중지"),
+    IN_PROGRESS("진행중"),
     COMPLETED("종료"),
     ;
 
