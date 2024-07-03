@@ -1,6 +1,8 @@
 package com.kwon.crmproject.campaign.domain.entity;
 
 import com.kwon.crmproject.common.entity.BaseEntity;
+import com.kwon.crmproject.common.exception.CustomException;
+import com.kwon.crmproject.common.exception.ErrorType;
 import com.kwon.crmproject.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -74,5 +76,26 @@ public class Campaign extends BaseEntity {
         this.rewardType = ObjectUtils.isEmpty(rewardType) ? this.rewardType: rewardType;
         this.trafficRequest = ObjectUtils.isEmpty(trafficRequest) ? this.trafficRequest: trafficRequest;
         this.state = ObjectUtils.isEmpty(state) ? this.state: state;
+    }
+
+    public void changeState(CampaignState state) {
+        if (CampaignState.COMPLETED.equals(state)) {
+            if (startDate.isAfter(LocalDate.now()))
+                throw CustomException.of(ErrorType.CAMPAIGN_SHUTDOWN_REJECT_BY_NONE_START_CAMPAIGN);
+
+            endDate = LocalDate.now().plusDays(1);
+        } else {
+            this.state = state;
+        }
+    }
+
+    public void extendEndDate(int extendDays) {
+        if (endDate.isBefore(LocalDate.now()))
+            throw CustomException.of(ErrorType.CAMPAIGN_STATE_IS_COMPLETE);
+        endDate = endDate.plusDays(extendDays);
+    }
+
+    public void removeMember() {
+        this.member = null;
     }
 }
