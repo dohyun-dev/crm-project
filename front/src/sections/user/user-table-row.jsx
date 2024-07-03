@@ -25,6 +25,7 @@ export default function UserTableRow({
   createdAt,
   updatedAt,
   onClick,
+  onClickDelete,
 }) {
   const navigate = useNavigate();
 
@@ -82,7 +83,7 @@ export default function UserTableRow({
           수정
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={onClickDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           삭제
         </MenuItem>
@@ -103,4 +104,5 @@ UserTableRow.propTypes = {
   updatedAt: PropTypes.any,
   selected: PropTypes.bool,
   onClick: PropTypes.func,
+  onClickDelete: PropTypes.func,
 };

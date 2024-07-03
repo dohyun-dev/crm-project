@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
@@ -65,7 +67,6 @@ export default function UserPage() {
 
     API.MEMBER_API.fetchMember(requestParams)
       .then((response) => {
-        console.log(response);
         setMembers(response.data.content);
         setTotalElements(response.data.totalElements);
         setLoading(false);
@@ -75,6 +76,78 @@ export default function UserPage() {
         setLoading(false);
       });
   }
+
+  const handleClickDelete = (memberId) => {
+    Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        API.MEMBER_API.deleteMember(memberId)
+          .then(() => {
+            Swal.fire({
+              title: '성공!',
+              text: '회원이 삭제되었습니다.',
+              icon: 'success',
+              confirmButtonText: '확인',
+            });
+            fetchUsers();
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: '실패!',
+              text: error.response.data.description,
+              icon: 'error',
+              confirmButtonText: '확인',
+            });
+          });
+      }
+    });
+  };
+
+  const handleClickExcelDownload = () => {
+    // 더미 데이터 생성 (실제 데이터로 교체 필요)
+    const data = members
+      .filter((member) => selected.includes(member.id))
+      .map((member) => ({
+        name: member.name,
+        username: member.username,
+        businessRegistrationNumber: member.businessRegistrationNumber,
+        email: member.email,
+        contact: member.contact,
+        accountHolder: member.accountHolder,
+        createdAt: member.createdAt,
+        updatedAt: member.updatedAt,
+      }));
+
+    const headers = [
+      {
+        name: '회원이름',
+        username: `아이디`,
+        businessRegistrationNumber: '사업자등록번호',
+        email: '이메일',
+        contact: '연락처',
+        accountHolder: '예금주',
+        createdAt: '생성일시',
+        updatedAt: '수정일시',
+      },
+    ];
+
+    const combinedData = [...headers, ...data];
+
+    // 워크시트 생성
+    const ws = XLSX.utils.json_to_sheet(combinedData, { skipHeader: true });
+
+    // 워크북 생성
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws);
+
+    // 엑셀 파일 생성 및 다운로드
+    XLSX.writeFile(wb, `회원목록.xlsx`);
+  };
 
   const notFound = !members.length;
 
@@ -97,7 +170,7 @@ export default function UserPage() {
 
         <Divider />
 
-        <UserActionToolbar />
+        <UserActionToolbar onCLickExcelDownload={handleClickExcelDownload} />
       </Card>
       {/* 검색 폼 끝 */}
 
@@ -141,6 +214,7 @@ export default function UserPage() {
                     updatedAt={row.updatedAt}
                     selected={selected.indexOf(row.id) !== -1}
                     onClick={(event) => handleClickTableRow(event, row.id)}
+                    onClickDelete={() => handleClickDelete(row.id)}
                   />
                 ))}
 

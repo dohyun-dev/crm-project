@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 
 import Iconify from '../../components/iconify';
 
-export default function UserActionToolbar() {
+export default function UserActionToolbar({ onCLickExcelDownload }) {
   const navigate = useNavigate();
 
   return (
@@ -36,6 +36,7 @@ export default function UserActionToolbar() {
               backgroundColor: '#1e5e37',
             },
           }}
+          onClick={onCLickExcelDownload}
         >
           엑셀 다운로드
         </Button>
