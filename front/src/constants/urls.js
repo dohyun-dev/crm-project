@@ -18,9 +18,15 @@ const CAMPAIGN = {
   EXTEND_URL: () => `${CAMPAIGN.BASE_URL}/extend`,
 };
 
+const AUTH = {
+  BASE_URL: '/api/v1/auth',
+  LOGIN_URL: () => `${AUTH.BASE_URL}/login`,
+};
+
 const API_URLS = {
   MEMBER,
   CAMPAIGN,
+  AUTH,
 };
 
 export default API_URLS;
