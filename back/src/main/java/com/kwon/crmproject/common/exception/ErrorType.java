@@ -19,6 +19,9 @@ public enum ErrorType {
     CAMPAIGN_STATE_IS_COMPLETE(HttpStatus.BAD_REQUEST, "종료된 캠페인이 존재해 요청이 거부되었습니다."),
     CAMPAIGN_SHUTDOWN_REJECT_BY_NONE_START_CAMPAIGN(HttpStatus.BAD_REQUEST, "아직 시작되지 않은 캠페인이 존재해 캠페인을 종료할 수 없습니다."),
 
+    // Auth
+    LOGIN_FAILURE(HttpStatus.UNAUTHORIZED, "아이디 혹은 비밀번호를 다시 확인해주세요."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,  "서버에 문제가 발생하였습니다. 잠시후 다시 시도해주세요");
 
     private HttpStatus httpStatus;

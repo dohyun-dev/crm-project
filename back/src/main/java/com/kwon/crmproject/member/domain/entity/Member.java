@@ -26,14 +26,18 @@ public class Member extends BaseEntity {
     private String email;
     private String contact;
     private String accountHolder;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Campaign> campaigns = new ArrayList<>();
+
+    private MemberRole role = MemberRole.USER;
 
     @Builder
     public Member(
             Long id, String name, String username,
             String password, String businessRegistrationNumber,
-            String email, String contact, String accountHolder
+            String email, String contact, String accountHolder,
+            MemberRole role
     ) {
         super(id);
         this.name = name;
@@ -43,6 +47,7 @@ public class Member extends BaseEntity {
         this.email = email;
         this.contact = contact;
         this.accountHolder = accountHolder;
+        this.role = role;
     }
 
     public void update(
