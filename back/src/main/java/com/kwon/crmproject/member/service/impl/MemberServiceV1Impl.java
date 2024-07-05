@@ -74,7 +74,8 @@ public class MemberServiceV1Impl implements MemberServiceV1 {
                 request.getBusinessRegistrationNumber(),
                 request.getEmail(),
                 request.getContact(),
-                request.getAccountHolder()
+                request.getAccountHolder(),
+                request.getRole()
         );
     }
 

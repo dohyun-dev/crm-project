@@ -33,16 +33,39 @@ public class AuthServiceV1Impl implements AuthServiceV1 {
         if (!passwordEncoder.matches(password, findMember.getPassword()))
             throw CustomException.of(ErrorType.LOGIN_FAILURE);
 
-        AuthServiceDto.TokenDto tokenDto = new AuthServiceDto.TokenDto(
-                jwtUtil.generateAccessToken(findMember.getUsername()),
-                jwtUtil.generateRefreshToken()
-        );
+        findMember.removeRefreshToken();
 
-        refreshTokenRepository.save(new RefreshToken(tokenDto.refreshToken()));
+        AuthServiceDto.TokenDto tokenDto = createAndSaveToken(
+                findMember
+        );
 
         return new AuthServiceDto.Login(
                 findMember,
                 tokenDto
         );
+    }
+
+    @Transactional
+    @Override
+    public AuthServiceDto.TokenDto reissue(String refreshToken) {
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> CustomException.of(ErrorType.TOKEN_EXPIRED));
+
+        jwtUtil.validateAndExtractToken(refreshToken)
+                .orElseThrow(() -> CustomException.of(ErrorType.TOKEN_EXPIRED));
+
+        refreshTokenEntity.getMember().removeRefreshToken();
+
+        return createAndSaveToken(refreshTokenEntity.getMember());
+    }
+
+    private AuthServiceDto.TokenDto createAndSaveToken(Member member) {
+        AuthServiceDto.TokenDto tokenDto = new AuthServiceDto.TokenDto(
+                jwtUtil.generateAccessToken(member.getUsername(), member.getName(), member.getRole()),
+                jwtUtil.generateRefreshToken()
+        );
+
+        refreshTokenRepository.save(new RefreshToken(tokenDto.refreshToken(), member));
+        return tokenDto;
     }
 }

@@ -1,7 +1,9 @@
 package com.kwon.crmproject.member.dto;
 
 import com.kwon.crmproject.common.constant.ValidationProperties;
+import com.kwon.crmproject.member.domain.entity.MemberRole;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -67,5 +69,7 @@ public abstract class MemberRequest {
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
         private String accountHolder;
+        
+        private MemberRole role;
     }
 }

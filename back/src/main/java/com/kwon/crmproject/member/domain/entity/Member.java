@@ -1,11 +1,9 @@
 package com.kwon.crmproject.member.domain.entity;
 
+import com.kwon.crmproject.auth.domain.entity.RefreshToken;
 import com.kwon.crmproject.campaign.domain.entity.Campaign;
 import com.kwon.crmproject.common.entity.BaseEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PreRemove;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,16 +28,34 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Campaign> campaigns = new ArrayList<>();
 
-    private MemberRole role = MemberRole.USER;
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshToken refreshToken;
+
+    @Enumerated(EnumType.STRING)
+    private MemberRole role;
 
     @Builder
     public Member(
             Long id, String name, String username,
             String password, String businessRegistrationNumber,
+            String email, String contact, String accountHolder
+    ) {
+        super(id);
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.businessRegistrationNumber = businessRegistrationNumber;
+        this.email = email;
+        this.contact = contact;
+        this.accountHolder = accountHolder;
+    }
+
+    public void update(
+            String name, String username,
+            String password, String businessRegistrationNumber,
             String email, String contact, String accountHolder,
             MemberRole role
     ) {
-        super(id);
         this.name = name;
         this.username = username;
         this.password = password;
@@ -50,24 +66,23 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
-    public void update(
-            String name, String username,
-            String password, String businessRegistrationNumber,
-            String email, String contact, String accountHolder
-    ) {
-        this.name = name;
-        this.username = username;
-        this.password = password;
-        this.businessRegistrationNumber = businessRegistrationNumber;
-        this.email = email;
-        this.contact = contact;
-        this.accountHolder = accountHolder;
+    public void removeRefreshToken() {
+        if (refreshToken == null)
+            return;
+        refreshToken.removeMember();
+        refreshToken = null;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.role == null) {
+            this.role = MemberRole.USER;
+        }
     }
 
     @PreRemove
     private void preRemove() {
-        for (Campaign campaign : campaigns) {
-            campaign.removeMember();
-        }
+        campaigns.forEach((c) -> c.removeMember());
+        removeRefreshToken();
     }
 }

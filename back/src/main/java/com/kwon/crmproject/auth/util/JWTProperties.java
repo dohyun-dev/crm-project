@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class JWTProperties {
     public final String ACCESS_TOKEN_HEADER = "accessToken";
 
-    public final String REFRESH_TOKEN_HEADER = "refreshToken";
+    public final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     public final String SECRET_KEY;
 

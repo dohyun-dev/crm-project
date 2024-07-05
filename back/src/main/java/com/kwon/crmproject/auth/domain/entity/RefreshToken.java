@@ -1,8 +1,10 @@
 package com.kwon.crmproject.auth.domain.entity;
 
 import com.kwon.crmproject.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
+import com.kwon.crmproject.member.domain.entity.Member;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +15,17 @@ public class RefreshToken extends BaseEntity {
 
     private String token;
 
-    public RefreshToken(String token) {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @Builder
+    public RefreshToken(String token, Member member) {
         this.token = token;
+        this.member = member;
+    }
+
+    public void removeMember() {
+        this.member = null;
     }
 }
