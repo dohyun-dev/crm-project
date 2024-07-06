@@ -95,8 +95,9 @@ export default function CampaignView() {
   const [memberInfo, setMemberInfo] = useRecoilState(authState);
 
   useEffect(() => {
+    console.log(111);
     fetchCampaigns();
-  }, [type, page, rowsPerPage, order, orderBy]);
+  }, [filterType, filterValue, page, rowsPerPage, order, orderBy]);
 
   function fetchCampaigns(params = {}) {
     setLoading(true);
@@ -281,6 +282,7 @@ export default function CampaignView() {
           onFilterTypeChange={handleChangeFilterType}
           filterValue={filterValue}
           onFilterValueChange={handleChangeFilterValue}
+          isAdmin={memberInfo.role === 'ADMIN'}
         />
 
         <Divider />
