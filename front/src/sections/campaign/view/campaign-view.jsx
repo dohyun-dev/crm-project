@@ -1,5 +1,7 @@
+import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
-import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Card from '@mui/material/Card';
@@ -18,16 +20,15 @@ import API from '../../../apis/api';
 import { emptyRows } from '../utils';
 import useTable from '../../../hooks/useTable';
 import TableEmptyRows from '../table-empty-rows';
+import { authState } from '../../../recoil/atoms';
 import TableNoData from '../../user/table-no-data';
 import CampaignTableRow from '../campaign-table-row';
 import UserTableHead from '../../user/user-table-head';
 import useTableFilter from '../../../hooks/useTableFilter';
+import CampaignExtendModal from '../campaign-extend-modal';
 import UserTableToolbar from '../../user/user-table-toolbar';
 import CampaignActionToolbar from '../campaign-action-toolbar';
 import useSelectTableData from '../../../hooks/useSelectTableData';
-import CampaignExtendModal from '../campaign-extend-modal';
-import * as XLSX from 'xlsx';
-import campaign from '../../../apis/campaign';
 
 // ----------------------------------------------------------------------
 
@@ -63,6 +64,8 @@ export default function CampaignView() {
   const [loading, setLoading] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [memberInfo, setMemberInfo] = useRecoilState(authState);
 
   useEffect(() => {
     fetchCampaigns();
@@ -193,20 +196,18 @@ export default function CampaignView() {
     // 더미 데이터 생성 (실제 데이터로 교체 필요)
     const data = campaigns
       .filter((campaign) => selected.includes(campaign.id))
-      .map((campaign) => {
-        return {
-          state: campaign.state,
-          memberName: campaign.memberName,
-          reward: `${headerMap[type]}`,
-          keyword: campaign.keyword,
-          companyName: campaign.companyName,
-          url: campaign.url,
-          trafficRequest: campaign.trafficRequest,
-          trafficRequestTotal: campaign.trafficRequestTotal,
-          startDate: campaign.startDate,
-          endDate: campaign.endDate,
-        };
-      });
+      .map((campaign) => ({
+        state: campaign.state,
+        memberName: campaign.memberName,
+        reward: `${headerMap[type]}`,
+        keyword: campaign.keyword,
+        companyName: campaign.companyName,
+        url: campaign.url,
+        trafficRequest: campaign.trafficRequest,
+        trafficRequestTotal: campaign.trafficRequestTotal,
+        startDate: campaign.startDate,
+        endDate: campaign.endDate,
+      }));
 
     const headers = [
       {
@@ -262,6 +263,7 @@ export default function CampaignView() {
           onClickShutdown={handleForcedShutdown}
           onClickExtend={handleClickExtend}
           onClickExcelDownload={handleClickExcelDownload}
+          isAdmin={memberInfo.role === 'ADMIN'}
         />
       </Card>
       <Card sx={{ mt: 4 }}>

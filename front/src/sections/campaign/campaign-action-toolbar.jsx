@@ -12,6 +12,7 @@ export default function CampaignActionToolbar({
   onClickShutdown,
   onClickExtend,
   onClickExcelDownload,
+  isAdmin,
 }) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -21,49 +22,51 @@ export default function CampaignActionToolbar({
       sx={{
         height: 45,
         display: 'flex',
-        justifyContent: isSmallScreen ? 'center' : 'space-between',
+        justifyContent: isSmallScreen ? 'center' : isAdmin ? 'space-between' : 'flex-end',
         bgcolor: 'background.paper',
         padding: (th) => th.spacing(0, 2),
         boxShadow: 1,
       }}
     >
-      <Box
-        display="flex"
-        sx={{
-          gap: isSmallScreen ? 0 : 1,
-        }}
-      >
-        <Button
-          variant="contained"
-          startIcon={!isSmallScreen && <Iconify icon="mdi:check-circle" />}
+      {isAdmin && (
+        <Box
+          display="flex"
           sx={{
-            backgroundColor: 'success.main',
-            color: 'success.contrastText',
-            '&:hover': {
-              backgroundColor: 'success.dark',
-            },
-            whiteSpace: 'nowrap',
+            gap: isSmallScreen ? 0 : 1,
           }}
-          onClick={onClickApprove}
         >
-          승인완료
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={!isSmallScreen && <Iconify icon="mdi:close-circle" />}
-          sx={{
-            backgroundColor: 'error.main',
-            color: 'error.contrastText',
-            '&:hover': {
-              backgroundColor: 'error.dark',
-            },
-            whiteSpace: 'nowrap',
-          }}
-          onClick={onClickShutdown}
-        >
-          강제종료
-        </Button>
-      </Box>
+          <Button
+            variant="contained"
+            startIcon={!isSmallScreen && <Iconify icon="mdi:check-circle" />}
+            sx={{
+              backgroundColor: 'success.main',
+              color: 'success.contrastText',
+              '&:hover': {
+                backgroundColor: 'success.dark',
+              },
+              whiteSpace: 'nowrap',
+            }}
+            onClick={onClickApprove}
+          >
+            승인완료
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={!isSmallScreen && <Iconify icon="mdi:close-circle" />}
+            sx={{
+              backgroundColor: 'error.main',
+              color: 'error.contrastText',
+              '&:hover': {
+                backgroundColor: 'error.dark',
+              },
+              whiteSpace: 'nowrap',
+            }}
+            onClick={onClickShutdown}
+          >
+            강제종료
+          </Button>
+        </Box>
+      )}
 
       <Box
         display="flex"
