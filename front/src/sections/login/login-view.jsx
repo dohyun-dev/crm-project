@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { useState } from 'react';
+import { useRecoilState } from 'recoil';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -21,6 +22,8 @@ import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 
 import API from '../../apis/api';
+import { authState } from '../../recoil/atoms';
+import { decodeJWTWithoutVerification } from '../../utils/jwt-utils';
 
 // ----------------------------------------------------------------------
 
@@ -44,10 +47,17 @@ export default function LoginView() {
     resolver: yupResolver(validationSchema),
   });
 
+  const [memberInfo, setMemberInfo] = useRecoilState(authState);
+
   const onSubmit = (data) => {
     API.AUTH_API.login({ ...data })
       .then((response) => {
         console.log(response);
+        setMemberInfo({
+          accessToken: response.data.accessToken,
+          ...decodeJWTWithoutVerification(response.data.accessToken),
+        });
+
         Swal.fire({
           title: '성공!',
           text: '로그인 되었습니다.',
