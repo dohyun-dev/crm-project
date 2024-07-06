@@ -38,15 +38,24 @@ const validationSchema = yup.object().shape({
   companyName: yup
     .string()
     .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .required('업체명을 입력해주세요.'),
+    .when('rewardType', {
+      is: (value) => value !== 'AUTOCOMPLETE',
+      then: yup.string().required('업체명을 입력해주세요.'),
+    }),
   url: yup
     .string()
     .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .required('URL을 입력해주세요.'),
+    .when('rewardType', {
+      is: (value) => value !== 'AUTOCOMPLETE',
+      then: yup.string().required('URL을 입력해주세요.'),
+    }),
   mid: yup
     .string()
     .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .required('MID를 입력해주세요.'),
+    .when('rewardType', {
+      is: (value) => value !== 'AUTOCOMPLETE',
+      then: yup.string().required('MID를 입력해주세요.'),
+    }),
   startDate: yup.date().required('시작날짜을 입력해주세요.'),
   period: yup
     .number()
@@ -74,6 +83,7 @@ export default function CampaignEditView() {
     setError,
     setValue,
     getValues,
+    watch,
   } = useForm({
     mode: 'onChange',
     resolver: yupResolver(validationSchema),
@@ -88,6 +98,8 @@ export default function CampaignEditView() {
       trafficRequest: 0,
     },
   });
+
+  const rewardType = watch('rewardType');
 
   useEffect(() => {
     getCampaign(campaignId);
@@ -131,9 +143,16 @@ export default function CampaignEditView() {
   }
 
   const onSubmit = (data) => {
-    console.log(111);
+    if (data.rewardType === 'AUTOCOMPLETE') {
+      data.companyName = '';
+      data.url = '';
+      data.mid = '';
+    }
+
     data.startDate = data.startDate ? format(new Date(data.startDate), 'yyyy-MM-dd') : null;
     data.endDate = data.endDate ? format(new Date(data.endDate), 'yyyy-MM-dd') : null;
+
+    console.log(data);
     API.CAMPAIGN_API.editCampaign(campaignId, data)
       .then(() => {
         Swal.fire({
@@ -142,7 +161,11 @@ export default function CampaignEditView() {
           icon: 'success',
           confirmButtonText: '확인',
         });
-        navigate(`/campaign/${data.rewardType}`);
+        navigate(
+          `/campaign/${data.rewardType
+            .toLowerCase()
+            .replace(/(_\w)/g, (matches) => matches[1].toUpperCase())}`
+        );
       })
       .catch((error) => {
         switch (error.response.data.type) {
@@ -235,68 +258,72 @@ export default function CampaignEditView() {
                   />
                 </FormControl>
 
-                <FormControl>
-                  <Controller
-                    name="companyName"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="업체명"
-                        variant="outlined"
-                        error={!!errors.companyName}
-                        helperText={errors.companyName?.message}
-                        fullWidth
+                {rewardType !== 'AUTOCOMPLETE' && (
+                  <>
+                    <FormControl>
+                      <Controller
+                        name="companyName"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="업체명"
+                            variant="outlined"
+                            error={!!errors.companyName}
+                            helperText={errors.companyName?.message}
+                            fullWidth
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </FormControl>
+                    </FormControl>
 
-                <FormControl>
-                  <Controller
-                    name="url"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="URL"
-                        variant="outlined"
-                        error={!!errors.url}
-                        helperText={errors.url?.message}
-                        fullWidth
+                    <FormControl>
+                      <Controller
+                        name="url"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="URL"
+                            variant="outlined"
+                            error={!!errors.url}
+                            helperText={errors.url?.message}
+                            fullWidth
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </FormControl>
+                    </FormControl>
 
-                <FormControl>
-                  <Controller
-                    name="mid"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="MID"
-                        type="number"
-                        variant="outlined"
-                        error={!!errors.mid}
-                        helperText={errors.mid?.message}
-                        fullWidth
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Tooltip title="https://m.place.naver.com/place/XXXXXXXX/home (XXXXXXXX 해당된 숫자를 입력하세요)">
-                                <IconButton>
-                                  <Iconify icon="eva:question-mark-circle-outline" />
-                                </IconButton>
-                              </Tooltip>
-                            </InputAdornment>
-                          ),
-                        }}
+                    <FormControl>
+                      <Controller
+                        name="mid"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="MID"
+                            type="number"
+                            variant="outlined"
+                            error={!!errors.mid}
+                            helperText={errors.mid?.message}
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Tooltip title="https://m.place.naver.com/place/XXXXXXXX/home (XXXXXXXX 해당된 숫자를 입력하세요)">
+                                    <IconButton>
+                                      <Iconify icon="eva:question-mark-circle-outline" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </FormControl>
+                    </FormControl>
+                  </>
+                )}
 
                 <Typography variant="subtitle2">기간</Typography>
                 <Box display="flex">
@@ -444,7 +471,7 @@ export default function CampaignEditView() {
                 fullWidth
                 sx={{ py: 1 }}
               >
-                등록하기
+                수정하기
               </Button>
             </CardActions>
           </Card>

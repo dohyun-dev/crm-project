@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { useRecoilState } from 'recoil';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
@@ -37,6 +38,7 @@ import {
 
 import API from '../../apis/api';
 import Iconify from '../../components/iconify';
+import { authState } from '../../recoil/atoms';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
@@ -61,15 +63,24 @@ const validationSchema = yup.object().shape({
   companyName: yup
     .string()
     .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .required('업체명을 입력해주세요.'),
+    .when('rewardType', {
+      is: (value) => value !== 'AUTOCOMPLETE',
+      then: yup.string().required('업체명을 입력해주세요.'),
+    }),
   url: yup
     .string()
     .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .required('URL을 입력해주세요.'),
+    .when('rewardType', {
+      is: (value) => value !== 'AUTOCOMPLETE',
+      then: yup.string().required('URL을 입력해주세요.'),
+    }),
   mid: yup
     .string()
     .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .required('MID를 입력해주세요.'),
+    .when('rewardType', {
+      is: (value) => value !== 'AUTOCOMPLETE',
+      then: yup.string().required('MID를 입력해주세요.'),
+    }),
   startDate: yup
     .date()
     .min(getMinDate(), ({ min }) => `시작일은 ${min.format('YYYY-MM-DD')} 이후여야 합니다.`)
@@ -93,6 +104,7 @@ export default function CampaignCreateView() {
   const navigate = useNavigate();
   const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [memberInfo, setMemberInfo] = useRecoilState(authState);
 
   const {
     control,
@@ -100,11 +112,12 @@ export default function CampaignCreateView() {
     formState: { errors },
     setError,
     setValue,
+    watch,
   } = useForm({
     mode: 'onChange',
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      memberId: null,
+      memberId: memberInfo.role !== 'ADMIN' ? memberInfo.memberId : null,
       keyword: '',
       companyName: '',
       url: '',
@@ -116,22 +129,31 @@ export default function CampaignCreateView() {
     },
   });
 
+  const rewardType = watch('rewardType');
+
   useEffect(() => {
-    if (searchTerm) {
-      gemMembers();
+    if (searchTerm && memberInfo.role === 'ADMIN') {
+      getMembers();
     } else {
       setMembers([]);
     }
-  }, [searchTerm]);
+  }, [searchTerm, memberInfo.role]);
 
-  function gemMembers() {
+  function getMembers() {
     API.MEMBER_API.fetchMember({ name: searchTerm }).then((response) => {
       setMembers(response.data.content);
     });
   }
 
   const onSubmit = (data) => {
+    if (data.rewardType === 'AUTOCOMPLETE') {
+      data.companyName = '';
+      data.url = '';
+      data.mid = '';
+    }
+
     data.startDate = data.startDate ? format(new Date(data.startDate), 'yyyy-MM-dd') : null;
+
     API.CAMPAIGN_API.createCampaign(data)
       .then(() => {
         Swal.fire({
@@ -140,7 +162,11 @@ export default function CampaignCreateView() {
           icon: 'success',
           confirmButtonText: '확인',
         });
-        navigate(`/campaign/${data.rewardType}`);
+        navigate(
+          `/campaign/${data.rewardType
+            .toLowerCase()
+            .replace(/(_\w)/g, (matches) => matches[1].toUpperCase())}`
+        );
       })
       .catch((error) => {
         switch (error.response.data.type) {
@@ -197,38 +223,40 @@ export default function CampaignCreateView() {
 
             <CardContent>
               <Stack p={1} spacing={2}>
-                <FormControl>
-                  <Controller
-                    name="memberId"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <Autocomplete
-                        {...field}
-                        options={members}
-                        value={members.find((option) => option.id === field.value) || null}
-                        getOptionLabel={(option) => option.name || ''}
-                        onInputChange={(event, newInputValue) => {
-                          setSearchTerm(newInputValue);
-                        }}
-                        onChange={(event, value) => {
-                          setValue('memberId', value ? value.id : '');
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            id="memberId"
-                            label="회원이름"
-                            variant="outlined"
-                          />
-                        )}
-                        popupIcon={null}
-                        noOptionsText="검색 결과가 존재하지 않습니다."
-                        PaperComponent={(props) => <StyledPaper {...props} />}
-                      />
-                    )}
-                  />
-                </FormControl>
+                {memberInfo.role === 'ADMIN' && (
+                  <FormControl>
+                    <Controller
+                      name="memberId"
+                      control={control}
+                      defaultValue=""
+                      render={({ field }) => (
+                        <Autocomplete
+                          {...field}
+                          options={members}
+                          value={members.find((option) => option.id === field.value) || null}
+                          getOptionLabel={(option) => option.name || ''}
+                          onInputChange={(event, newInputValue) => {
+                            setSearchTerm(newInputValue);
+                          }}
+                          onChange={(event, value) => {
+                            setValue('memberId', value ? value.id : '');
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              id="memberId"
+                              label="회원이름"
+                              variant="outlined"
+                            />
+                          )}
+                          popupIcon={null}
+                          noOptionsText="검색 결과가 존재하지 않습니다."
+                          PaperComponent={(props) => <StyledPaper {...props} />}
+                        />
+                      )}
+                    />
+                  </FormControl>
+                )}
 
                 <FormControl>
                   <Controller
@@ -265,69 +293,73 @@ export default function CampaignCreateView() {
                   />
                 </FormControl>
 
-                <FormControl>
-                  <Controller
-                    name="companyName"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="업체명"
-                        variant="outlined"
-                        error={!!errors.name}
-                        helperText={errors.name?.message}
-                        fullWidth
+                {rewardType !== 'AUTOCOMPLETE' && (
+                  <>
+                    <FormControl>
+                      <Controller
+                        name="companyName"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="업체명"
+                            variant="outlined"
+                            error={!!errors.companyName}
+                            helperText={errors.companyName?.message}
+                            fullWidth
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </FormControl>
+                    </FormControl>
 
-                <FormControl>
-                  <Controller
-                    name="url"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="URL"
-                        variant="outlined"
-                        error={!!errors.url}
-                        helperText={errors.url?.message}
-                        fullWidth
+                    <FormControl>
+                      <Controller
+                        name="url"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="URL"
+                            variant="outlined"
+                            error={!!errors.url}
+                            helperText={errors.url?.message}
+                            fullWidth
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </FormControl>
+                    </FormControl>
 
-                <FormControl>
-                  <Controller
-                    name="mid"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="MID"
-                        type="number"
-                        variant="outlined"
-                        error={!!errors.mid}
-                        helperText={errors.mid?.message}
-                        fullWidth
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Tooltip
-                                sx={{ cursor: 'pointer' }}
-                                title="https://m.place.naver.com/place/XXXXXXXX/home (XXXXXXXX 해당된 숫자를 입력하세요)"
-                              >
-                                <Iconify icon="eva:question-mark-circle-outline" />
-                              </Tooltip>
-                            </InputAdornment>
-                          ),
-                        }}
+                    <FormControl>
+                      <Controller
+                        name="mid"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="MID"
+                            type="number"
+                            variant="outlined"
+                            error={!!errors.mid}
+                            helperText={errors.mid?.message}
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Tooltip
+                                    sx={{ cursor: 'pointer' }}
+                                    title="https://m.place.naver.com/place/XXXXXXXX/home (XXXXXXXX 해당된 숫자를 입력하세요)"
+                                  >
+                                    <Iconify icon="eva:question-mark-circle-outline" />
+                                  </Tooltip>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </FormControl>
+                    </FormControl>
+                  </>
+                )}
 
                 <Typography variant="subtitle2">기간</Typography>
                 <Box display="flex">
