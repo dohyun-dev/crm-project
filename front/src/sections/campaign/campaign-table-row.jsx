@@ -51,6 +51,8 @@ export default function CampaignTableRow({
   endDate,
   onClick,
   onClickDelete,
+  isAdmin,
+  isAutocomplete,
 }) {
   const navigate = useNavigate();
 
@@ -94,9 +96,15 @@ export default function CampaignTableRow({
         <TableCell>{memberName}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{rewardType}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{keyword}</TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{companyName}</TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{url}</TableCell>
-        <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{mid}</TableCell>
+        {!isAutocomplete && (
+          <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{companyName}</TableCell>
+        )}
+        {!isAutocomplete && (
+          <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{url}</TableCell>
+        )}
+        {!isAutocomplete && (
+          <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{mid}</TableCell>
+        )}
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{trafficRequest}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
           {trafficRequestTotal}
@@ -104,11 +112,12 @@ export default function CampaignTableRow({
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{period}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{startDate}</TableCell>
         <TableCell sx={{ textAlign: 'center', whiteSpace: 'nowrap' }}>{endDate}</TableCell>
-
         <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          {isAdmin && (
+            <IconButton onClick={handleOpenMenu}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
         </TableCell>
       </TableRow>
 
@@ -153,4 +162,6 @@ CampaignTableRow.propTypes = {
   endDate: PropTypes.string,
   onClick: PropTypes.func,
   onClickDelete: PropTypes.func,
+  isAdmin: PropTypes.bool,
+  isAutocomplete: PropTypes.bool,
 };

@@ -32,6 +32,33 @@ import useSelectTableData from '../../../hooks/useSelectTableData';
 
 // ----------------------------------------------------------------------
 
+const getHeadLabel = (rewardType) => {
+  const commonLabels = [
+    { id: 'state', label: '상태', align: 'center' },
+    { id: 'memberName', label: '회원이름', align: 'center' },
+    { id: 'reward', label: '리워드', align: 'center' },
+    { id: 'keyword', label: '키워드', align: 'center' },
+    { id: 'trafficRequest', label: '유입요청', align: 'center' },
+    { id: 'trafficRequestTotal', label: '유입요청(전체)', align: 'center' },
+    { id: 'period', label: '기간', align: 'center' },
+    { id: 'startDate', label: '시작일시', align: 'center' },
+    { id: 'endDate', label: '종료일시', align: 'center' },
+    { id: '', label: '', align: 'center' },
+  ];
+
+  if (rewardType !== 'autocomplete') {
+    return [
+      ...commonLabels.slice(0, 4),
+      { id: 'companyName', label: '업체명', align: 'center' },
+      { id: 'url', label: 'URL', align: 'center' },
+      { id: 'mid', label: 'MID', align: 'center' },
+      ...commonLabels.slice(4),
+    ];
+  }
+
+  return commonLabels;
+};
+
 export default function CampaignView() {
   const { type } = useParams();
 
@@ -277,21 +304,7 @@ export default function CampaignView() {
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={(e) => handleClickAllTableRow(e, campaigns)}
-                headLabel={[
-                  { id: 'state', label: '상태', align: 'center' },
-                  { id: 'memberName', label: '회원이름', align: 'center' },
-                  { id: 'reward', label: '리워드', align: 'center' },
-                  { id: 'keyword', label: '키워드', align: 'center' },
-                  { id: 'companyName', label: '업체명', align: 'center' },
-                  { id: 'url', label: 'URL', align: 'center' },
-                  { id: 'mid', label: 'MID', align: 'center' },
-                  { id: 'trafficRequest', label: '유입요청', align: 'center' },
-                  { id: 'trafficRequestTotal', label: '유입요청(전체)', align: 'center' },
-                  { id: 'period', label: '기간', align: 'center' },
-                  { id: 'startDate', label: '시작일시', align: 'center' },
-                  { id: 'endDate', label: '종료일시', align: 'center' },
-                  { id: '', label: '', align: 'center' },
-                ]}
+                headLabel={getHeadLabel(type)}
               />
               <TableBody>
                 {campaigns.map((row) => (
@@ -313,6 +326,8 @@ export default function CampaignView() {
                     selected={selected.indexOf(row.id) !== -1}
                     onClick={(event) => handleClickTableRow(event, row.id)}
                     onClickDelete={() => handleClickDelete(row.id)}
+                    isAdmin={memberInfo.role === 'ADMIN'}
+                    isAutocomplete={type === 'autocomplete'}
                   />
                 ))}
 
@@ -321,7 +336,7 @@ export default function CampaignView() {
                   emptyRows={emptyRows(page, rowsPerPage, campaigns.length)}
                 />
 
-                {notFound && <TableNoData colSpan={14} />}
+                {notFound && <TableNoData colSpan={type === 'autocomplete' ? 11 : 14} />}
               </TableBody>
             </Table>
           </TableContainer>
