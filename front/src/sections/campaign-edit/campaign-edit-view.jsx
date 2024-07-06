@@ -35,33 +35,29 @@ const validationSchema = yup.object().shape({
     .string()
     .max(STRING_MAX_LENGTH, `키워드는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
     .required('키워드를 입력해주세요.'),
-  companyName: yup
-    .string()
-    .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .when('rewardType', {
-      is: (value) => value !== 'AUTOCOMPLETE',
-      then: yup.string().required('업체명을 입력해주세요.'),
-    }),
-  url: yup
-    .string()
-    .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .when('rewardType', {
-      is: (value) => value !== 'AUTOCOMPLETE',
-      then: yup.string().required('URL을 입력해주세요.'),
-    }),
-  mid: yup
-    .string()
-    .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .when('rewardType', {
-      is: (value) => value !== 'AUTOCOMPLETE',
-      then: yup.string().required('MID를 입력해주세요.'),
-    }),
+  companyName: yup.string().when('rewardType', {
+    is: (value) => value !== 'AUTOCOMPLETE',
+    then: (schema) =>
+      schema
+        .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+        .required('업체명을 입력해주세요.'),
+  }),
+  url: yup.string().when('rewardType', {
+    is: (value) => value !== 'AUTOCOMPLETE',
+    then: (schema) =>
+      schema
+        .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+        .required('URL을 입력해주세요.'),
+  }),
+  mid: yup.string().when('rewardType', {
+    is: (value) => value !== 'AUTOCOMPLETE',
+    then: (schema) =>
+      schema
+        .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+        .required('MID를 입력해주세요.'),
+  }),
   startDate: yup.date().required('시작날짜을 입력해주세요.'),
-  period: yup
-    .number()
-    .transform((value, originalValue) => (originalValue === '' ? null : value))
-    .required('기간을 입력해주세요.')
-    .positive('1일 부터 입력해주세요.'),
+  endDate: yup.date().required('종료날짜을 입력해주세요.'),
   rewardType: yup.string().required('리워드 타입을 선택해주세요.'),
   trafficRequest: yup
     .string()
@@ -152,7 +148,7 @@ export default function CampaignEditView() {
     data.startDate = data.startDate ? format(new Date(data.startDate), 'yyyy-MM-dd') : null;
     data.endDate = data.endDate ? format(new Date(data.endDate), 'yyyy-MM-dd') : null;
 
-    console.log(data);
+    console.log('Submitting data:', data); // 추가된 로그
     API.CAMPAIGN_API.editCampaign(campaignId, data)
       .then(() => {
         Swal.fire({
@@ -436,7 +432,9 @@ export default function CampaignEditView() {
                                 <IconButton
                                   size="small"
                                   sx={{ p: 0 }}
-                                  onClick={() => field.onChange(parseInt(field.value || 0) + 50)}
+                                  onClick={() =>
+                                    field.onChange(Number.parseInt(field.value || 0, 10) + 50)
+                                  }
                                 >
                                   <Iconify icon="eva:arrow-up-outline" />
                                 </IconButton>
@@ -444,7 +442,9 @@ export default function CampaignEditView() {
                                   size="small"
                                   sx={{ p: 0 }}
                                   onClick={() =>
-                                    field.onChange(Math.max(0, parseInt(field.value || 0) - 50))
+                                    field.onChange(
+                                      Math.max(0, Number.parseInt(field.value || 0, 10) - 50)
+                                    )
                                   }
                                 >
                                   <Iconify icon="eva:arrow-down-outline" />

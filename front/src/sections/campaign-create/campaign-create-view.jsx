@@ -60,27 +60,27 @@ const validationSchema = yup.object().shape({
     .string()
     .max(STRING_MAX_LENGTH, `키워드는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
     .required('키워드를 입력해주세요.'),
-  companyName: yup
-    .string()
-    .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .when('rewardType', {
-      is: (value) => value !== 'AUTOCOMPLETE',
-      then: yup.string().required('업체명을 입력해주세요.'),
-    }),
-  url: yup
-    .string()
-    .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .when('rewardType', {
-      is: (value) => value !== 'AUTOCOMPLETE',
-      then: yup.string().required('URL을 입력해주세요.'),
-    }),
-  mid: yup
-    .string()
-    .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
-    .when('rewardType', {
-      is: (value) => value !== 'AUTOCOMPLETE',
-      then: yup.string().required('MID를 입력해주세요.'),
-    }),
+  companyName: yup.string().when('rewardType', {
+    is: (rewardType) => rewardType !== 'AUTOCOMPLETE',
+    then: (schema) =>
+      schema
+        .max(STRING_MAX_LENGTH, `업체명은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+        .required('업체명을 입력해주세요.'),
+  }),
+  url: yup.string().when('rewardType', {
+    is: (rewardType) => rewardType !== 'AUTOCOMPLETE',
+    then: (schema) =>
+      schema
+        .max(STRING_MAX_LENGTH, `URL은 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+        .required('URL을 입력해주세요.'),
+  }),
+  mid: yup.string().when('rewardType', {
+    is: (rewardType) => rewardType !== 'AUTOCOMPLETE',
+    then: (schema) =>
+      schema
+        .max(STRING_MAX_LENGTH, `MID는 최대 ${STRING_MAX_LENGTH}자까지 입력 가능합니다.`)
+        .required('MID를 입력해주세요.'),
+  }),
   startDate: yup
     .date()
     .min(getMinDate(), ({ min }) => `시작일은 ${min.format('YYYY-MM-DD')} 이후여야 합니다.`)
@@ -123,7 +123,7 @@ export default function CampaignCreateView() {
       url: '',
       mid: '',
       startDate: null,
-      period: 0,
+      period: 1,
       rewardType: 'PLACE_TRAFFIC',
       trafficRequest: 0,
     },
