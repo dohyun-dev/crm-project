@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useRecoilState } from 'recoil';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -17,6 +18,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { NAV } from './config-layout';
 import navConfig from './config-navigation';
+import { authState } from '../../recoil/atoms';
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +27,8 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const upLg = useResponsive('up', 'lg');
 
+  const [memberInfo, setMemberInfo] = useRecoilState(authState);
+
   useEffect(() => {
     if (openNav) {
       onCloseNav();
@@ -32,11 +36,16 @@ export default function Nav({ openNav, onCloseNav }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+  const renderNavItem = (item) => {
+    if (item.isAdmin) {
+      return memberInfo.role === 'ADMIN' ? <NavItem key={item.title} item={item} /> : null;
+    }
+    return <NavItem key={item.title} item={item} />;
+  };
+
   const renderMenu = (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
-      {navConfig.map((item) => (
-        <NavItem key={item.title} item={item} />
-      ))}
+      {navConfig.map((item) => renderNavItem(item))}
     </Stack>
   );
 
