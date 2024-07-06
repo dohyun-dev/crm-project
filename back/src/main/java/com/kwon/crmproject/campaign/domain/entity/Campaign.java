@@ -76,6 +76,12 @@ public class Campaign extends BaseEntity {
         this.rewardType = ObjectUtils.isEmpty(rewardType) ? this.rewardType: rewardType;
         this.trafficRequest = ObjectUtils.isEmpty(trafficRequest) ? this.trafficRequest: trafficRequest;
         this.state = ObjectUtils.isEmpty(state) ? this.state: state;
+
+        if (CampaignRewardType.AUTOCOMPLETE.equals(rewardType)) {
+            this.companyName = "";
+            this.url = "";
+            this.mid = "";
+        }
     }
 
     public void changeState(CampaignState state) {

@@ -50,10 +50,6 @@ public abstract class CampaignRequest {
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
-        @Pattern(
-                regexp = ValidationProperties.IS_NUMBER_CHECK_PATTERN,
-                message = ValidationProperties.Message.IS_NUMBER_CHECK
-        )
         private String mid;
 
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -76,6 +72,11 @@ public abstract class CampaignRequest {
         )
         @MultipleOfFifty
         private String trafficRequest;
+
+        @AssertTrue(message = ValidationProperties.Message.IS_NUMBER_CHECK)
+        private boolean mid() {
+            return rewardType != CampaignRewardType.AUTOCOMPLETE || mid == null || mid.matches(ValidationProperties.IS_NUMBER_CHECK_PATTERN);
+        }
     }
 
     @Data
@@ -102,10 +103,6 @@ public abstract class CampaignRequest {
                 max = ValidationProperties.STRING_MAX_LENGTH,
                 message = ValidationProperties.Message.STRING_MAX_LENGTH
         )
-        @Pattern(
-                regexp = ValidationProperties.IS_NUMBER_CHECK_PATTERN,
-                message = ValidationProperties.Message.IS_NUMBER_CHECK
-        )
         private String mid;
 
         @NotNull
@@ -129,6 +126,11 @@ public abstract class CampaignRequest {
         private String trafficRequest;
 
         private CampaignState campaignState;
+
+        @AssertTrue(message = ValidationProperties.Message.IS_NUMBER_CHECK)
+        private boolean mid() {
+            return rewardType != CampaignRewardType.AUTOCOMPLETE || mid == null || mid.matches(ValidationProperties.IS_NUMBER_CHECK_PATTERN);
+        }
     }
 
     @Data
