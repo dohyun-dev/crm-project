@@ -10,10 +10,18 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import CardHeader from '@mui/material/CardHeader';
-import { TextField, CardActions, CardContent, FormControl } from '@mui/material';
+import {
+  Select,
+  TextField,
+  InputLabel,
+  CardActions,
+  CardContent,
+  FormControl,
+} from '@mui/material';
 
 import API from '../../apis/api';
 import Iconify from '../../components/iconify';
@@ -77,6 +85,7 @@ export default function UserEditView() {
     API.MEMBER_API.getMember(memberId)
       .then((response) => {
         const memberData = response.data;
+        console.log(memberData);
         Object.keys(memberData).forEach((field) => {
           setValue(field, memberData[field]);
         });
@@ -313,6 +322,33 @@ export default function UserEditView() {
                       />
                     )}
                   />
+                </FormControl>
+
+                <FormControl fullWidth variant="outlined" size="small" error={!!errors.role}>
+                  <InputLabel id="role-label">권한</InputLabel>
+                  <Controller
+                    name="role"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        labelId="role-label"
+                        id="role"
+                        label="권한"
+                        variant="outlined"
+                        size="small"
+                      >
+                        <MenuItem value="USER">일반회원</MenuItem>
+                        <MenuItem value="ADMIN">관리자</MenuItem>
+                      </Select>
+                    )}
+                  />
+                  {errors.role && (
+                    <Typography variant="body2" color="error">
+                      {errors.role.message}
+                    </Typography>
+                  )}
                 </FormControl>
               </Stack>
             </CardContent>
