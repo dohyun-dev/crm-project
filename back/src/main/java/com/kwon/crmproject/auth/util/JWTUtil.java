@@ -14,45 +14,73 @@ import java.util.Optional;
 @Slf4j
 public class JWTUtil {
 
-    public static final String CLAIMS_ROLE_NAME = "role";
+    public static final String CLAIMS_MEMBER_ID_NAME = "memberId";
     public static final String CLAIMS_MEMBER_NAME_NAME = "memberName";
+    public static final String CLAIMS_ROLE_NAME = "role";
     private final SecretKey secretKey;
     private final JWTProperties properties;
 
     public JWTUtil(JWTProperties properties) {
-         this.secretKey = Keys.hmacShaKeyFor(properties.SECRET_KEY.getBytes());
-         this.properties = properties;
+        this.secretKey = Keys.hmacShaKeyFor(properties.getSECRET_KEY().getBytes());
+        this.properties = properties;
     }
 
-    public String generateAccessToken(String username, String memberName, MemberRole role) {
-        return generateToken(username, memberName, role.name(), properties.ACCESS_TOKEN_EXPIRATION_TIME);
+    public String generateAccessToken(Long memberId, String username, String memberName, MemberRole role) {
+        return generateToken(memberId, username, memberName, role.name(), properties.getACCESS_TOKEN_EXPIRATION_TIME());
     }
 
     public String generateRefreshToken() {
-        return generateToken(null, null, null, properties.REFRESH_TOKEN_EXPIRATION_TIME);
+        return generateToken(null, null, null, null, properties.getREFRESH_TOKEN_EXPIRATION_TIME());
     }
 
     public Optional<Claims> validateAndExtractToken(String token) {
-        Claims claims = null;
         try {
-            claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return Optional.of(claims);
+        } catch (ExpiredJwtException e) {
+            log.error("토큰이 만료되었습니다: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.error("지원되지 않는 토큰입니다: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.error("잘못된 토큰입니다: {}", e.getMessage());
+        } catch (SignatureException e) {
+            log.error("토큰 서명 검증 실패: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("토큰이 비어있거나 잘못되었습니다: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("잘못된 토큰");
+            log.error("토큰 검증 중 알 수 없는 오류 발생: {}", e.getMessage());
         }
-        return Optional.ofNullable(claims);
+        return Optional.empty();
     }
 
-    private String generateToken(String username, String memberName, String role, long expirationTime) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expirationTime);
+    private String generateToken(Long memberId, String username, String memberName, String role, long expirationTime) {
+        Date now = new Date(System.currentTimeMillis());
+        Date expiryDate = new Date(System.currentTimeMillis() + expirationTime);
 
-        return Jwts.builder()
+        System.out.println(111);
+        System.out.println(now);
+        System.out.println(expiryDate);
+
+        JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .claim(CLAIMS_MEMBER_NAME_NAME, memberName)
-                .claim(CLAIMS_ROLE_NAME, role)
-                .compact();
+                .signWith(secretKey, SignatureAlgorithm.HS256);
+
+        if (memberId != null) {
+            jwtBuilder.claim(CLAIMS_MEMBER_ID_NAME, memberId);
+        }
+        if (memberName != null) {
+            jwtBuilder.claim(CLAIMS_MEMBER_NAME_NAME, memberName);
+        }
+        if (role != null) {
+            jwtBuilder.claim(CLAIMS_ROLE_NAME, role);
+        }
+
+        return jwtBuilder.compact();
     }
 }

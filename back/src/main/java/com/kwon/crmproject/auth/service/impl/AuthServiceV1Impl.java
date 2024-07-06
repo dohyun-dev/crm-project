@@ -54,14 +54,16 @@ public class AuthServiceV1Impl implements AuthServiceV1 {
         jwtUtil.validateAndExtractToken(refreshToken)
                 .orElseThrow(() -> CustomException.of(ErrorType.TOKEN_EXPIRED));
 
+        AuthServiceDto.TokenDto tokenDto = createAndSaveToken(refreshTokenEntity.getMember());
+
         refreshTokenEntity.getMember().removeRefreshToken();
 
-        return createAndSaveToken(refreshTokenEntity.getMember());
+        return tokenDto;
     }
 
     private AuthServiceDto.TokenDto createAndSaveToken(Member member) {
         AuthServiceDto.TokenDto tokenDto = new AuthServiceDto.TokenDto(
-                jwtUtil.generateAccessToken(member.getUsername(), member.getName(), member.getRole()),
+                jwtUtil.generateAccessToken(member.getId(), member.getUsername(), member.getName(), member.getRole()),
                 jwtUtil.generateRefreshToken()
         );
 

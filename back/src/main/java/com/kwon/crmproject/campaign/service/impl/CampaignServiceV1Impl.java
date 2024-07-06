@@ -8,11 +8,16 @@ import com.kwon.crmproject.campaign.service.CampaignServiceV1;
 import com.kwon.crmproject.common.exception.CustomException;
 import com.kwon.crmproject.common.exception.ErrorType;
 import com.kwon.crmproject.member.domain.entity.Member;
+import com.kwon.crmproject.member.domain.entity.MemberRole;
 import com.kwon.crmproject.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,13 +44,29 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
     @Transactional
     @Override
     public Page<Campaign> findAll(CampaignRequest.SearchCondition searchCondition, Pageable pageable) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Member exampleMember = memberRepository.findByUsername((String) authentication.getPrincipal())
+                .orElseThrow(() -> CustomException.of(ErrorType.UNAUTHORIZED));
+
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("companyName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+
+        if (MemberRole.ADMIN.equals(exampleMember.getRole())) {
+            exampleMember = Member.builder()
+                    .name(searchCondition.memberName())
+                    .build();
+
+            matcher.withMatcher("member.name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+        }
+
         Campaign exampleCampaign = Campaign.builder()
-                .keyword(searchCondition.keyword())
                 .companyName(searchCondition.companyName())
+                .member(exampleMember)
                 .rewardType(searchCondition.rewardType())
                 .build();
 
-        Example<Campaign> example = Example.of(exampleCampaign);
+        Example<Campaign> example = Example.of(exampleCampaign, matcher);
 
         return campaignRepository.findAll(example, pageable);
     }

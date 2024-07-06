@@ -7,6 +7,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,7 +26,10 @@ public class CampaignApiControllerV1 {
     }
 
     @GetMapping
-    public Page<CampaignResponse.FindAll> findAll(CampaignRequest.SearchCondition searchCondition, Pageable pageable) {
+    public Page<CampaignResponse.FindAll> findAll(
+            CampaignRequest.SearchCondition searchCondition,
+            Pageable pageable
+    ) {
         return campaignService.findAll(searchCondition, pageable).map(CampaignResponse.FindAll::new);
     }
 

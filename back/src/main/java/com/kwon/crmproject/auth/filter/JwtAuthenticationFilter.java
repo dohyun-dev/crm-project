@@ -1,13 +1,16 @@
 package com.kwon.crmproject.auth.filter;
 
 import com.kwon.crmproject.auth.util.JWTUtil;
+import com.kwon.crmproject.member.domain.entity.Member;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -30,16 +34,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (header == null || !header.startsWith(TOKEN_PREFIX)) {
+            log.info("헤더 검증 실패");
             filterChain.doFilter(request, response);
             return;
         }
+        log.info("헤더 검증 완료");
 
         String token = header.substring(7);
 
         // 토큰 검증
         Optional<Claims> optionalClaims = jwtUtil.validateAndExtractToken(token);
 
-
+        System.out.println("토큰 검증 완료");
         if (optionalClaims.isPresent()) {
             Claims claims = optionalClaims.get();
 
@@ -50,9 +56,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     username,
                     null,
                     Collections.singletonList(new SimpleGrantedAuthority(role))
-                    );
+            );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext();
+            log.info("인증 정보 등록 {}", SecurityContextHolder.getContext());
         }
 
         filterChain.doFilter(request, response);

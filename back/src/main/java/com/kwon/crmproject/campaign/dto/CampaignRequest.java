@@ -15,7 +15,7 @@ public abstract class CampaignRequest {
 
     public record SearchCondition(
             CampaignRewardType rewardType,
-            String keyword,
+            String memberName,
             String companyName
     ) {
 
