@@ -5,10 +5,9 @@ import com.kwon.crmproject.auth.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +23,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JWTUtil jwtUtil;
@@ -42,14 +42,16 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(
-                        authorize -> authorize
+                        auth -> auth
                                 .requestMatchers("/api/v1/auth/**").permitAll()
                                 .requestMatchers("/api/v1/users/**").hasAnyRole("ADMIN")
-                                .anyRequest().authenticated()
+                                .requestMatchers("/api/v1/**").authenticated()
+                                .anyRequest().permitAll()
                 );
 
         http
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling((handler) -> handler.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();
     }

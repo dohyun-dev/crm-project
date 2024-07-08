@@ -7,10 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +17,7 @@ public class CampaignApiControllerV1 {
 
     private final CampaignServiceV1 campaignService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{campaignId}")
     public CampaignResponse.FindDetail findDetail(@PathVariable("campaignId") Long campaignId) {
         return new CampaignResponse.FindDetail(campaignService.findDetail(campaignId));
@@ -38,6 +36,7 @@ public class CampaignApiControllerV1 {
         campaignService.create(request);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{campaignId}")
     public void edit(
             @PathVariable("campaignId") Long campaignId,
@@ -46,13 +45,13 @@ public class CampaignApiControllerV1 {
         campaignService.edit(campaignId, request);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/change-state")
     public void changeState(
             @Valid @RequestBody CampaignRequest.ChangeState request
     ) {
         campaignService.changeState(request.getCampaignIds(), request.getCampaignState());
     }
-
 
     @PutMapping("/extend")
     public void extend(
@@ -61,6 +60,7 @@ public class CampaignApiControllerV1 {
         campaignService.extendEndDate(request.getCampaignIds(), request.getExtendDays());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{campaignId}")
     public void delete(
             @PathVariable("campaignId") Long campaignId
