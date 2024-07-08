@@ -50,8 +50,8 @@ public class SecurityConfig {
                 );
 
         http
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling((handler) -> handler.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                // .exceptionHandling((handler) -> handler.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();
     }
