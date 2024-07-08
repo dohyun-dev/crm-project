@@ -85,4 +85,8 @@ public class Member extends BaseEntity {
         campaigns.forEach((c) -> c.removeMember());
         removeRefreshToken();
     }
+
+    public boolean isAdmin() {
+        return this.role.equals(MemberRole.ADMIN);
+    }
 }
