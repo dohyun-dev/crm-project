@@ -6,11 +6,14 @@ import Box from '@mui/material/Box';
 import Nav from './nav';
 import Main from './main';
 import Header from './header';
+import { useAxiosInterceptors } from '../../apis/axios';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout({ children }) {
   const [openNav, setOpenNav] = useState(false);
+
+  useAxiosInterceptors();
 
   return (
     <>
