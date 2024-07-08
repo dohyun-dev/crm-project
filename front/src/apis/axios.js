@@ -54,6 +54,8 @@ export const useAxiosInterceptors = () => {
           });
         }
       }
+
+      return Promise.reject(error);
     }
   );
 };
