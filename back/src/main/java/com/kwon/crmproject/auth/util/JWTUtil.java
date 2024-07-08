@@ -75,6 +75,26 @@ public class JWTUtil {
         return Optional.empty();
     }
 
+    public String findTokenInCookies(TokenType tokenType, HttpServletRequest request) {
+        Cookie[] cookiesArray = request.getCookies();
+
+        if (cookiesArray == null) {
+            System.out.println("No cookies found in request");
+            throw CustomException.of(ErrorType.TOKEN_EXPIRED);
+        }
+
+        List<Cookie> cookies = Arrays.stream(cookiesArray)
+                .filter(c -> c.getName().equals(properties.getTokenCookieName(tokenType)))
+                .toList();
+
+        if (cookies.isEmpty()) {
+            System.out.println("No refresh token cookie found");
+            throw CustomException.of(ErrorType.TOKEN_EXPIRED);
+        }
+
+        return cookies.get(0).getValue();
+    }
+
     private String generateToken(Long memberId, String username, String memberName, String role, long expirationTime) {
         Date now = new Date(System.currentTimeMillis());
         Date expiryDate = new Date(System.currentTimeMillis() + expirationTime);
