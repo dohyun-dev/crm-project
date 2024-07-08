@@ -21,8 +21,9 @@ public enum ErrorType {
 
     // Auth
     LOGIN_FAILURE(HttpStatus.UNAUTHORIZED, "아이디 혹은 비밀번호를 다시 확인해주세요."),
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요한 서비스입니다. 로그인해주세요"),
+    UNAUTHORIZED(HttpStatus.FORBIDDEN, "로그인이 필요한 서비스입니다. 로그인해주세요"),
     TOKEN_EXPIRED(HttpStatus.FORBIDDEN, "토큰이 만료되었습니다. 다시 로그인 해주세요."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,  "서버에 문제가 발생하였습니다. 잠시후 다시 시도해주세요");
 
