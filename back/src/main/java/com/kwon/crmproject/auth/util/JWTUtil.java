@@ -1,13 +1,19 @@
 package com.kwon.crmproject.auth.util;
 
+import com.kwon.crmproject.common.exception.CustomException;
+import com.kwon.crmproject.common.exception.ErrorType;
 import com.kwon.crmproject.member.domain.entity.MemberRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -26,11 +32,23 @@ public class JWTUtil {
     }
 
     public String generateAccessToken(Long memberId, String username, String memberName, MemberRole role) {
-        return generateToken(memberId, username, memberName, role.name(), properties.getACCESS_TOKEN_EXPIRATION_TIME());
+        return generateToken(
+                memberId,
+                username,
+                memberName,
+                role.name(),
+                properties.getExpirationSeconds(TokenType.ACCESS_TOKEN)
+        );
     }
 
     public String generateRefreshToken() {
-        return generateToken(null, null, null, null, properties.getREFRESH_TOKEN_EXPIRATION_TIME());
+        return generateToken(
+                null,
+                null,
+                null,
+                null,
+                properties.getExpirationSeconds(TokenType.REFRESH_TOKEN)
+        );
     }
 
     public Optional<Claims> validateAndExtractToken(String token) {
@@ -61,10 +79,6 @@ public class JWTUtil {
         Date now = new Date(System.currentTimeMillis());
         Date expiryDate = new Date(System.currentTimeMillis() + expirationTime);
 
-        System.out.println(111);
-        System.out.println(now);
-        System.out.println(expiryDate);
-
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(now)
@@ -80,7 +94,6 @@ public class JWTUtil {
         if (role != null) {
             jwtBuilder.claim(CLAIMS_ROLE_NAME, role);
         }
-
         return jwtBuilder.compact();
     }
 }
