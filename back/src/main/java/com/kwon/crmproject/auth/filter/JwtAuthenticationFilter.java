@@ -1,6 +1,7 @@
 package com.kwon.crmproject.auth.filter;
 
 import com.kwon.crmproject.auth.util.JWTUtil;
+import com.kwon.crmproject.auth.util.TokenType;
 import com.kwon.crmproject.member.domain.entity.Member;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -30,22 +31,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // 헤더 검증
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (header == null || !header.startsWith(TOKEN_PREFIX)) {
-            log.info("헤더 검증 실패");
+        String token;
+
+        try {
+            token = jwtUtil.findTokenInCookies(TokenType.ACCESS_TOKEN, request);
+        } catch (Exception e) {
             filterChain.doFilter(request, response);
             return;
         }
-        log.info("헤더 검증 완료");
-
-        String token = header.substring(7);
 
         // 토큰 검증
         Optional<Claims> optionalClaims = jwtUtil.validateAndExtractToken(token);
 
-        System.out.println("토큰 검증 완료");
         if (optionalClaims.isPresent()) {
             Claims claims = optionalClaims.get();
 
@@ -59,8 +57,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            SecurityContextHolder.getContext();
-            log.info("인증 정보 등록 {}", SecurityContextHolder.getContext());
         }
 
         filterChain.doFilter(request, response);
