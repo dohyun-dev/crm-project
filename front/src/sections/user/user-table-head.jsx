@@ -19,6 +19,7 @@ export default function UserTableHead({
   rowCount,
   numSelected,
   onSelectAllClick,
+  isAutocomplete,
 }) {
   const onSort = (property) => (event) => {
     onRequestSort(event, property);
@@ -75,4 +76,5 @@ UserTableHead.propTypes = {
   rowCount: PropTypes.number,
   numSelected: PropTypes.number,
   onSelectAllClick: PropTypes.func,
+  isAutocomplete: PropTypes.bool,
 };

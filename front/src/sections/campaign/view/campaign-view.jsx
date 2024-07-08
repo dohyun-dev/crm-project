@@ -95,8 +95,11 @@ export default function CampaignView() {
   const [memberInfo, setMemberInfo] = useRecoilState(authState);
 
   useEffect(() => {
-    console.log(111);
-    fetchCampaigns();
+    filterType && filterValue
+      ? fetchCampaigns({
+          [filterType]: filterValue,
+        })
+      : fetchCampaigns();
   }, [filterType, filterValue, page, rowsPerPage, order, orderBy]);
 
   function fetchCampaigns(params = {}) {

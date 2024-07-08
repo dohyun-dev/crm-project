@@ -16,6 +16,7 @@ export default function UserTableToolbar({
   onFilterTypeChange,
   filterValue,
   onFilterValueChange,
+  isAdmin,
 }) {
   return (
     <Toolbar
@@ -36,7 +37,9 @@ export default function UserTableToolbar({
             }
             switch (selected) {
               case 'companyName':
-                return '이름';
+                return '업체명';
+              case 'memberName':
+                return '회원이름';
               default:
                 return '전체';
             }
@@ -46,7 +49,8 @@ export default function UserTableToolbar({
           <MenuItem value="">
             <em>전체</em>
           </MenuItem>
-          <MenuItem value="companyName">이름</MenuItem>
+          {isAdmin && <MenuItem value="memberName">회원이름</MenuItem>}
+          <MenuItem value="companyName">업체명</MenuItem>
         </Select>
         <OutlinedInput
           value={filterValue}
@@ -71,4 +75,5 @@ UserTableToolbar.propTypes = {
   onFilterValueChange: PropTypes.func,
   filterType: PropTypes.string,
   onFilterTypeChange: PropTypes.func,
+  isAdmin: PropTypes.bool,
 };
