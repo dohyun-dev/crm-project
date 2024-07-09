@@ -95,12 +95,14 @@ export default function CampaignView() {
   const [memberInfo, setMemberInfo] = useRecoilState(authState);
 
   useEffect(() => {
-    filterType && filterValue
-      ? fetchCampaigns({
-          [filterType]: filterValue,
-        })
-      : fetchCampaigns();
-  }, [filterType, filterValue, page, rowsPerPage, order, orderBy]);
+    if (filterType && filterValue) {
+      fetchCampaigns({
+        [filterType]: filterValue,
+      });
+      return;
+    }
+    fetchCampaigns();
+  }, [type, filterType, filterValue, page, rowsPerPage, order, orderBy]);
 
   function fetchCampaigns(params = {}) {
     setLoading(true);
@@ -113,17 +115,13 @@ export default function CampaignView() {
       ...params,
     };
 
-    console.log(requestParams);
-
     API.CAMPAIGN_API.fetchCampaign(requestParams)
       .then((response) => {
-        console.log(response);
         setCampaigns(response.data.content);
         setTotalElements(response.data.totalElements);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching user data:', error);
         setLoading(false);
       });
   }

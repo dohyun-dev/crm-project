@@ -32,7 +32,7 @@ const navConfig = [
     isAdmin: false,
   },
   {
-    title: '고객관리',
+    title: '회원관리',
     path: '/user',
     icon: icon('ic_user'),
     isAdmin: true,
