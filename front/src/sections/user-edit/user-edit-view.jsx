@@ -85,7 +85,6 @@ export default function UserEditView() {
     API.MEMBER_API.getMember(memberId)
       .then((response) => {
         const memberData = response.data;
-        console.log(memberData);
         Object.keys(memberData).forEach((field) => {
           setValue(field, memberData[field]);
         });

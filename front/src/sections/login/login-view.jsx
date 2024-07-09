@@ -52,7 +52,6 @@ export default function LoginView() {
   const onSubmit = (data) => {
     API.AUTH_API.login({ ...data })
       .then((response) => {
-        console.log(response);
         setMemberInfo({
           accessToken: response.data.accessToken,
           ...decodeJWTWithoutVerification(response.data.accessToken),
@@ -67,7 +66,6 @@ export default function LoginView() {
         router.push(`/`);
       })
       .catch((error) => {
-        console.log(error);
         Swal.fire({
           title: '실패!',
           text: error.response.data.description,

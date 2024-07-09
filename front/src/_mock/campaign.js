@@ -19,6 +19,3 @@ export const campaigns = [...Array(24)].map((_, index) => ({
   startDate: faker.date.past().toLocaleDateString('en-CA'),
   endDate: faker.date.recent().toLocaleDateString('en-CA'),
 }));
-
-// Example usage
-console.log(campaigns);

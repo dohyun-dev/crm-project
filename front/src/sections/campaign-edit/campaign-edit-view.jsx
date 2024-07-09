@@ -148,7 +148,6 @@ export default function CampaignEditView() {
     data.startDate = data.startDate ? format(new Date(data.startDate), 'yyyy-MM-dd') : null;
     data.endDate = data.endDate ? format(new Date(data.endDate), 'yyyy-MM-dd') : null;
 
-    console.log('Submitting data:', data); // 추가된 로그
     API.CAMPAIGN_API.editCampaign(campaignId, data)
       .then(() => {
         Swal.fire({

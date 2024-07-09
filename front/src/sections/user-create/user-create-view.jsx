@@ -75,7 +75,6 @@ export default function UserCreateView() {
   });
 
   const onSubmit = (data) => {
-    console.log(1111);
     API.MEMBER_API.createMember(data)
       .then((response) => {
         Swal.fire({

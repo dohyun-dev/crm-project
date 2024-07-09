@@ -13,6 +13,3 @@ export const users = [...Array(24)].map((_, index) => ({
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
 }));
-
-// Example usage
-console.log(users);
