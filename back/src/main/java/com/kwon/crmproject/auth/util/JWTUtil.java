@@ -79,7 +79,6 @@ public class JWTUtil {
         Cookie[] cookiesArray = request.getCookies();
 
         if (cookiesArray == null) {
-            System.out.println("No cookies found in request");
             throw CustomException.of(ErrorType.TOKEN_EXPIRED);
         }
 
@@ -88,7 +87,6 @@ public class JWTUtil {
                 .toList();
 
         if (cookies.isEmpty()) {
-            System.out.println("No refresh token cookie found");
             throw CustomException.of(ErrorType.TOKEN_EXPIRED);
         }
 

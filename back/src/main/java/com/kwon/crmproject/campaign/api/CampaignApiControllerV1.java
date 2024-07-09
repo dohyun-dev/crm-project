@@ -53,6 +53,7 @@ public class CampaignApiControllerV1 {
         campaignService.changeState(request.getCampaignIds(), request.getCampaignState());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/extend")
     public void extend(
             @Valid @RequestBody CampaignRequest.Extend request

@@ -7,7 +7,7 @@ import API from './api';
 import { authState } from '../recoil/atoms';
 import { decodeJWTWithoutVerification } from '../utils/jwt-utils';
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://220.81.18.197:8080';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

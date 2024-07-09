@@ -415,7 +415,6 @@ export default function CampaignCreateView() {
                     name="rewardType"
                     defaultValue=""
                     control={control}
-                    defaultValue="PLACE_TRAFFIC"
                     render={({ field }) => (
                       <FormControl component="fieldset" fullWidth variant="outlined" size="medium">
                         <RadioGroup {...field}>

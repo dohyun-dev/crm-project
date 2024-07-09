@@ -29,6 +29,7 @@ public class AuthApiControllerV1 {
 
     @PostMapping("/login")
     public AuthResponse.TokenDto login(@RequestBody AuthRequest.Login request, HttpServletResponse response) {
+        log.info("{}", request);
         AuthServiceDto.Login loginDto = authService.login(request.getUsername(), request.getPassword());
         setTokenInCookies(loginDto.tokenDto(), response);
         return new AuthResponse.TokenDto(loginDto.tokenDto().accessToken());
