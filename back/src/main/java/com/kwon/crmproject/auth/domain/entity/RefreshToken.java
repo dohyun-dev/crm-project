@@ -1,5 +1,6 @@
 package com.kwon.crmproject.auth.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.kwon.crmproject.common.entity.BaseEntity;
 import com.kwon.crmproject.member.domain.entity.Member;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ public class RefreshToken extends BaseEntity {
 
     private String token;
 
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

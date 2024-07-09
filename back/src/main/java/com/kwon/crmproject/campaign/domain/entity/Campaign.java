@@ -1,5 +1,6 @@
 package com.kwon.crmproject.campaign.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.kwon.crmproject.common.entity.BaseEntity;
 import com.kwon.crmproject.common.exception.CustomException;
 import com.kwon.crmproject.common.exception.ErrorType;
@@ -38,6 +39,7 @@ public class Campaign extends BaseEntity {
 
     private Integer trafficRequest;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId")
     private Member member;
