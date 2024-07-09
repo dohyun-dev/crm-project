@@ -9,13 +9,7 @@ import { RouterLink } from 'src/routes/components';
 // ----------------------------------------------------------------------
 
 const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
-  const logo = (
-    <Box
-      component="img"
-      src="/assets/logo.png"
-      sx={{ width: 40, height: 40, cursor: 'pointer', ...sx }}
-    />
-  );
+  const logo = <Box sx={{ width: 40, height: 40, ...sx }} />;
 
   if (disabledLink) {
     return logo;
@@ -26,17 +20,19 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
       component={RouterLink}
       href="/"
       sx={{
+        height: 88,
         display: 'flex',
         flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
         textDecoration: 'none',
         color: 'text.primary',
         fontWeight: 600,
-        letterSpacing: '0.3rem',
+        letterSpacing: '1rem',
       }}
     >
-      {logo}
-      포춘마케팅
+      {/* {logo} */}
+      포엔
     </Link>
   );
 });
