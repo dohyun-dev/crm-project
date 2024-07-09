@@ -54,6 +54,15 @@ export const useAxiosInterceptors = () => {
           });
         }
       }
+      if (error) {
+        navigate('/login');
+        Swal.fire({
+          title: '실패!',
+          text: '접근 권한이 없습니다. 다시 로그인 해주세요',
+          icon: 'error',
+          confirmButtonText: '확인',
+        });
+      }
 
       return Promise.reject(error);
     }
