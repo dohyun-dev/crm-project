@@ -21,7 +21,8 @@ const CAMPAIGN = {
 const AUTH = {
   BASE_URL: '/api/v1/auth',
   LOGIN_URL: () => `${AUTH.BASE_URL}/login`,
-  reissue: () => `${AUTH.BASE_URL}/reissue`,
+  REISSUE: () => `${AUTH.BASE_URL}/reissue`,
+  LOGOUT: () => `${AUTH.BASE_URL}/logout`,
 };
 
 const API_URLS = {

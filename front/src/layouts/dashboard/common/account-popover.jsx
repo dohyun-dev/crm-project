@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 
 import { account } from 'src/_mock/account';
 
+import API from '../../../apis/api';
 import { authState } from '../../../recoil/atoms';
 
 // ----------------------------------------------------------------------
@@ -32,8 +33,13 @@ export default function AccountPopover() {
   };
 
   const handleLogout = () => {
-    navigate('/login');
-    setMemberInfo({});
+    API.AUTH_API.logout()
+      .then(() => {})
+      .catch(() => {})
+      .finally(() => {
+        navigate('/login');
+        setMemberInfo({});
+      });
   };
 
   return (

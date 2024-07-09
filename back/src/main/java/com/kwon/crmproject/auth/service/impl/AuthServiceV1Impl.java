@@ -48,8 +48,7 @@ public class AuthServiceV1Impl implements AuthServiceV1 {
     @Transactional
     @Override
     public AuthServiceDto.TokenDto reissue(String refreshToken) {
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> CustomException.of(ErrorType.TOKEN_EXPIRED));
+        RefreshToken refreshTokenEntity = findRefreshToken(refreshToken);
 
         jwtUtil.validateAndExtractToken(refreshToken)
                 .orElseThrow(() -> CustomException.of(ErrorType.TOKEN_EXPIRED));
@@ -59,6 +58,18 @@ public class AuthServiceV1Impl implements AuthServiceV1 {
         refreshTokenEntity.getMember().removeRefreshToken();
 
         return tokenDto;
+    }
+
+    @Transactional
+    @Override
+    public void logout(String refreshToken) {
+        RefreshToken refreshTokenEntity = findRefreshToken(refreshToken);
+        refreshTokenRepository.delete(refreshTokenEntity);
+    }
+
+    private RefreshToken findRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> CustomException.of(ErrorType.TOKEN_EXPIRED));
     }
 
     private AuthServiceDto.TokenDto createAndSaveToken(Member member) {

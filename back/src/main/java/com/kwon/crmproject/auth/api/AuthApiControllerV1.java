@@ -42,25 +42,51 @@ public class AuthApiControllerV1 {
         return new AuthResponse.TokenDto(tokenDto.accessToken());
     }
 
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtUtil.findTokenInCookies(TokenType.REFRESH_TOKEN, request);
+        authService.logout(refreshToken);
+        removeTokenInCookies(response);
+    }
+
     private void setTokenInCookies(AuthServiceDto.TokenDto tokenDto, HttpServletResponse response) {
-        setCookies(
+        setCookie(
                 TokenType.ACCESS_TOKEN,
                 tokenDto.accessToken(),
                 response
         );
 
-        setCookies(
+        setCookie(
                 TokenType.REFRESH_TOKEN,
                 tokenDto.refreshToken(),
                 response
         );
     }
 
-    private void setCookies(TokenType tokenType, String value, HttpServletResponse response) {
+    private void removeTokenInCookies(HttpServletResponse response) {
+        removeCookie(
+                TokenType.ACCESS_TOKEN,
+                response
+        );
+
+        removeCookie(
+                TokenType.REFRESH_TOKEN,
+                response
+        );
+    }
+
+    private void setCookie(TokenType tokenType, String value, HttpServletResponse response) {
         Cookie tokenCookie = new Cookie(jwtProperties.getTokenCookieName(tokenType), value);
         tokenCookie.setHttpOnly(true);
         tokenCookie.setPath("/");
         tokenCookie.setMaxAge((int) (jwtProperties.getExpirationSeconds(tokenType)));
+        response.addCookie(tokenCookie);
+    }
+
+    private void removeCookie(TokenType tokenType, HttpServletResponse response) {
+        Cookie tokenCookie = new Cookie(jwtProperties.getTokenCookieName(tokenType), null);
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge(0);
         response.addCookie(tokenCookie);
     }
 }

@@ -7,13 +7,19 @@ const login = async (data) => {
 };
 
 const reissue = async () => {
-  const response = await axiosInstance2.post(API_URLS.AUTH.reissue());
+  const response = await axiosInstance2.post(API_URLS.AUTH.REISSUE());
   return response.data;
+};
+
+const logout = async () => {
+  const response = await axiosInstance2.post(API_URLS.AUTH.LOGOUT());
+  return response;
 };
 
 const AUTH_API = {
   login,
   reissue,
+  logout,
 };
 
 export default AUTH_API;
