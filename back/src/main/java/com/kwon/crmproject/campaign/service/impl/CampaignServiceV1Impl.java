@@ -122,7 +122,7 @@ public class CampaignServiceV1Impl implements CampaignServiceV1 {
     }
 
     private LocalDate getEndDate(LocalDate startDate, int period) {
-        return startDate.plusDays(period);
+        return startDate.plusDays(Math.max(period - 1, 0));
     }
 
     private Member getMember(Long memberId) {

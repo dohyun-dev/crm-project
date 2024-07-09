@@ -43,7 +43,7 @@ public abstract class CampaignResponse {
             this.id = campaign.getId();
             this.memberId = campaign.getMember().getId();
             this.memberName = campaign.getMember().getName();
-            int period = (int) ChronoUnit.DAYS.between(campaign.getStartDate(), campaign.getEndDate()) + 1;
+            int period = (int) ChronoUnit.DAYS.between(campaign.getStartDate(), campaign.getEndDate());
             this.state = campaign.getState().getDescription();
             this.companyName = campaign.getCompanyName();
             this.rewardType = campaign.getRewardType();
