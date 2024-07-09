@@ -74,21 +74,23 @@ export default function CampaignActionToolbar({
           gap: isSmallScreen ? 0 : 1,
         }}
       >
-        <Button
-          variant="contained"
-          startIcon={!isSmallScreen && <Iconify icon="mdi:wrench" />}
-          sx={{
-            backgroundColor: '#0052cc',
-            color: 'white',
-            '&:hover': {
-              backgroundColor: '#003d99',
-            },
-            whiteSpace: 'nowrap',
-          }}
-          onClick={onClickExtend}
-        >
-          연장하기
-        </Button>
+        {isAdmin && (
+          <Button
+            variant="contained"
+            startIcon={!isSmallScreen && <Iconify icon="mdi:wrench" />}
+            sx={{
+              backgroundColor: '#0052cc',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#003d99',
+              },
+              whiteSpace: 'nowrap',
+            }}
+            onClick={onClickExtend}
+          >
+            연장하기
+          </Button>
+        )}
         <Button
           variant="contained"
           startIcon={!isSmallScreen && <Iconify icon="mdi:file-excel-box" />}
