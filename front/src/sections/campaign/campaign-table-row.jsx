@@ -66,6 +66,8 @@ export default function CampaignTableRow({
     setOpen(null);
   };
 
+  console.log(state);
+
   return (
     <>
       <TableRow

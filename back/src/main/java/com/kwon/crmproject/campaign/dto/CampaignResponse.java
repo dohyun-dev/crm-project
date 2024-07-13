@@ -46,7 +46,7 @@ public abstract class CampaignResponse {
             this.memberName = campaign.getMember().getName();
             int period = (int) ChronoUnit.DAYS.between(campaign.getStartDate(), campaign.getEndDate());
             this.state = campaign.getState().equals(CampaignState.IN_PROGRESS)
-                    ? LocalDate.now().isBefore(campaign.getEndDate())
+                    ? LocalDate.now().isEqual(campaign.getEndDate()) || LocalDate.now().isAfter(campaign.getEndDate())
                     ? CampaignState.COMPLETED.getDescription()
                     : CampaignState.IN_PROGRESS.getDescription()
                     :  campaign.getState().getDescription();
@@ -95,7 +95,7 @@ public abstract class CampaignResponse {
             this.id = campaign.getId();
             int period = (int) ChronoUnit.DAYS.between(campaign.getStartDate(), campaign.getEndDate()) + 1;
             this.state = campaign.getState().equals(CampaignState.IN_PROGRESS)
-                    ? LocalDate.now().isBefore(campaign.getEndDate())
+                    ? LocalDate.now().isEqual(campaign.getEndDate()) || LocalDate.now().isAfter(campaign.getEndDate())
                     ? CampaignState.COMPLETED.getDescription()
                     : CampaignState.IN_PROGRESS.getDescription()
                     :  campaign.getState().getDescription();

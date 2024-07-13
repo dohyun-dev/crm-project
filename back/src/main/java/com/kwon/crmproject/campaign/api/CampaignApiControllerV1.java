@@ -50,6 +50,7 @@ public class CampaignApiControllerV1 {
     public void changeState(
             @Valid @RequestBody CampaignRequest.ChangeState request
     ) {
+        System.out.println(request);
         campaignService.changeState(request.getCampaignIds(), request.getCampaignState());
     }
 
