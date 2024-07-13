@@ -7,7 +7,8 @@ import API from './api';
 import { authState } from '../recoil/atoms';
 import { decodeJWTWithoutVerification } from '../utils/jwt-utils';
 
-const API_BASE_URL = 'http://www.nfor.shop';
+// const API_BASE_URL = 'http://www.nfor.shop';
+const API_BASE_URL = 'http://localhost:8080';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -54,7 +55,7 @@ export const useAxiosInterceptors = () => {
           });
         }
       }
-      if (error) {
+      if (error.response.status !== 400) {
         navigate('/login');
         Swal.fire({
           title: '실패!',
