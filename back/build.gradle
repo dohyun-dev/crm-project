@@ -64,4 +64,5 @@ bootJar {
 
 bootWar {
     enabled = true
+    archiveFileName = 'ROOT.war'
 }

@@ -31,8 +31,8 @@ public class Member extends BaseEntity {
     private List<Campaign> campaigns = new ArrayList<>();
 
     @JsonIgnore
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private RefreshToken refreshToken;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshToken = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
@@ -69,11 +69,15 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
+    public void setRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken.add(refreshToken);
+        refreshToken.setMember(this);
+    }
+
     public void removeRefreshToken() {
         if (refreshToken == null)
             return;
-        refreshToken.removeMember();
-        refreshToken = null;
+        refreshToken.forEach((r) -> r.removeMember());
     }
 
     @PrePersist

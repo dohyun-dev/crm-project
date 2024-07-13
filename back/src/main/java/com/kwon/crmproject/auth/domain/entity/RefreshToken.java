@@ -17,13 +17,17 @@ public class RefreshToken extends BaseEntity {
     private String token;
 
     @JsonBackReference
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member member;
 
     @Builder
     public RefreshToken(String token, Member member) {
         this.token = token;
+        this.member = member;
+    }
+
+    public void setMember(Member member) {
         this.member = member;
     }
 
