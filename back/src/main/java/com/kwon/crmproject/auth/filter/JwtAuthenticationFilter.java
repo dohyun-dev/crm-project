@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private static final String TOKEN_PREFIX = "Bearer ";
+    private static final String ROLE_PREFIX = "ROLE_";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -53,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
-                    Collections.singletonList(new SimpleGrantedAuthority(role))
+                    Collections.singletonList(new SimpleGrantedAuthority(ROLE_PREFIX + role))
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
