@@ -2,7 +2,6 @@ package com.kwon.crmproject.campaign.dto;
 
 import com.kwon.crmproject.campaign.domain.entity.Campaign;
 import com.kwon.crmproject.campaign.domain.entity.CampaignRewardType;
-import com.kwon.crmproject.campaign.domain.entity.CampaignState;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -45,11 +44,7 @@ public abstract class CampaignResponse {
             this.memberId = campaign.getMember().getId();
             this.memberName = campaign.getMember().getName();
             int period = (int) ChronoUnit.DAYS.between(campaign.getStartDate(), campaign.getEndDate());
-            this.state = campaign.getState().equals(CampaignState.IN_PROGRESS)
-                    ? LocalDate.now().isEqual(campaign.getEndDate()) || LocalDate.now().isAfter(campaign.getEndDate())
-                    ? CampaignState.COMPLETED.getDescription()
-                    : CampaignState.IN_PROGRESS.getDescription()
-                    :  campaign.getState().getDescription();
+            this.state = campaign.getState().getDescription();
             this.companyName = campaign.getCompanyName();
             this.rewardType = campaign.getRewardType();
             this.keyword = campaign.getKeyword();
@@ -94,11 +89,7 @@ public abstract class CampaignResponse {
         public FindAll(Campaign campaign) {
             this.id = campaign.getId();
             int period = (int) ChronoUnit.DAYS.between(campaign.getStartDate(), campaign.getEndDate()) + 1;
-            this.state = campaign.getState().equals(CampaignState.IN_PROGRESS)
-                    ? LocalDate.now().isEqual(campaign.getEndDate()) || LocalDate.now().isAfter(campaign.getEndDate())
-                    ? CampaignState.COMPLETED.getDescription()
-                    : CampaignState.IN_PROGRESS.getDescription()
-                    :  campaign.getState().getDescription();
+            this.state = campaign.getState().getDescription();
             this.memberName = campaign.getMember().getName();
             this.companyName = campaign.getCompanyName();
             this.rewardType = campaign.getRewardType().getDescription();

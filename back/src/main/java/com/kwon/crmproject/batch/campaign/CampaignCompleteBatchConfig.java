@@ -108,7 +108,7 @@ public class CampaignCompleteBatchConfig {
                 WHERE 
                     c.state = :state 
                     AND 
-                    c.endDate <= :date
+                    c.endDate < :date
                 """;
 
         public static final String JPA_QUERY_PARAM_STATE = "state";
