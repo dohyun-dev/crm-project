@@ -103,6 +103,10 @@ public class Campaign extends BaseEntity {
         endDate = endDate.plusDays(extendDays);
     }
 
+    public void completeCampaign() {
+        this.state = CampaignState.COMPLETED;
+    }
+
     public void removeMember() {
         this.member = null;
     }
