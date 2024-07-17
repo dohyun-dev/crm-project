@@ -6,6 +6,8 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +19,10 @@ import static com.kwon.crmproject.batch.campaign.CampaignCompleteBatchConfig.Con
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MeetingReminderJobScheduler {
+public class CampaignCompleteJobScheduler {
 
     private final JobLauncher jobLauncher;
-    private final Job meetingReminderJob;
+    private final Job campaignCompleteJob;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void runJob() throws Exception {
@@ -32,8 +34,19 @@ public class MeetingReminderJobScheduler {
                 .toJobParameters();
 
         jobLauncher.run(
-                meetingReminderJob,
+                campaignCompleteJob,
                 jobParameters
         );
+    }
+
+    @Bean
+    public CommandLineRunner commandLineRunner() {
+        return args -> {
+            JobParameters jobParameters = new JobParametersBuilder()
+                    .addString(JOB_PARAMETERS_CUR_DATE, LocalDate.now().toString())
+                    .addLong(JOB_PARAMETERS_TIMESTAMP, System.currentTimeMillis())
+                    .toJobParameters();
+            jobLauncher.run(campaignCompleteJob, jobParameters);
+        };
     }
 }

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -21,11 +20,10 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
@@ -33,34 +31,30 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CampaignCompleteBatchConfig {
 
-    private final JobRepository jobRepository;
-    private final JpaTransactionManager transactionManager;
+    private final PlatformTransactionManager transactionManager;
     private final EntityManagerFactory entityManagerFactory;
 
     @Bean
-    public Job campaignCompleteJob() {
+    public Job campaignCompleteJob(Step campaignCompleteStep, JobRepository jobRepository) {
         return new JobBuilder(Constant.JOB_NAME, jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(meetingReminderStep())
+                .start(campaignCompleteStep)
                 .build();
     }
 
     @Bean
-    @JobScope
-    public Step meetingReminderStep() {
-        return new StepBuilder(Constant.STEP_NAME, jobRepository)
+    public Step campaignCompleteStep(ItemProcessor<Campaign, Campaign> itemProcessor, ItemWriter<Campaign> itemWriter, JobRepository campaignJobRepository) {
+        return new StepBuilder(Constant.STEP_NAME, campaignJobRepository)
                 .<Campaign, Campaign>chunk(Constant.CHUNK_SIZE, transactionManager)
                 .reader(itemReader(null))
-                .processor(itemProcessor())
-                .writer(itemWriter())
+                .processor(itemProcessor)
+                .writer(itemWriter)
                 .build();
     }
 
     @Bean
     @StepScope
-    public JpaPagingItemReader<Campaign> itemReader(
-            @Value("#{jobParameters[curDate]}") LocalDate curDate
-    ) {
+    public JpaPagingItemReader<Campaign> itemReader(@Value("#{jobParameters[curDate]}") LocalDate curDate) {
         log.info("curDate={}", curDate);
 
         curDate = ObjectUtils.isEmpty(curDate) ? LocalDate.now() : curDate;
@@ -88,7 +82,6 @@ public class CampaignCompleteBatchConfig {
         };
     }
 
-    // 아이템 라이터
     @Bean
     @StepScope
     public ItemWriter<Campaign> itemWriter() {
