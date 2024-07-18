@@ -1,6 +1,7 @@
 package com.kwon.crmproject.member.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kwon.crmproject.auth.domain.entity.RefreshToken;
 import com.kwon.crmproject.campaign.domain.entity.Campaign;
 import com.kwon.crmproject.common.entity.BaseEntity;
@@ -26,11 +27,11 @@ public class Member extends BaseEntity {
     private String contact;
     private String accountHolder;
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Campaign> campaigns = new ArrayList<>();
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RefreshToken> refreshToken = new ArrayList<>();
 
@@ -78,6 +79,7 @@ public class Member extends BaseEntity {
         if (refreshToken == null)
             return;
         refreshToken.forEach((r) -> r.removeMember());
+        refreshToken.clear();
     }
 
     @PrePersist
