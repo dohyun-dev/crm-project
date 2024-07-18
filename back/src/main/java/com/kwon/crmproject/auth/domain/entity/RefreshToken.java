@@ -25,6 +25,7 @@ public class RefreshToken extends BaseEntity {
     public RefreshToken(String token, Member member) {
         this.token = token;
         this.member = member;
+        member.setRefreshToken(this);
     }
 
     public void setMember(Member member) {

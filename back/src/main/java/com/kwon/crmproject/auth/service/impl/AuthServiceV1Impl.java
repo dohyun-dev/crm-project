@@ -10,10 +10,12 @@ import com.kwon.crmproject.common.exception.ErrorType;
 import com.kwon.crmproject.member.domain.entity.Member;
 import com.kwon.crmproject.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -53,8 +55,6 @@ public class AuthServiceV1Impl implements AuthServiceV1 {
         jwtUtil.validateAndExtractToken(refreshToken)
                 .orElseThrow(() -> CustomException.of(ErrorType.TOKEN_EXPIRED));
 
-        refreshTokenEntity.getMember().removeRefreshToken();
-
         AuthServiceDto.TokenDto tokenDto = createAndSaveToken(refreshTokenEntity.getMember());
 
         return tokenDto;
@@ -81,7 +81,6 @@ public class AuthServiceV1Impl implements AuthServiceV1 {
         );
 
         RefreshToken refreshToken = new RefreshToken(tokenDto.refreshToken(), member);
-        member.setRefreshToken(refreshToken);
         refreshTokenRepository.save(refreshToken);
         return tokenDto;
     }

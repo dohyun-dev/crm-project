@@ -4,6 +4,7 @@ import com.kwon.crmproject.auth.dto.AuthServiceDto;
 import com.kwon.crmproject.auth.service.AuthServiceV1;
 import com.kwon.crmproject.auth.util.JWTUtil;
 import com.kwon.crmproject.auth.util.TokenType;
+import com.kwon.crmproject.common.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -86,10 +87,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void reissueToken(String refreshToken, HttpServletResponse response) {
-        AuthServiceDto.TokenDto tokenDto = authService.reissue(refreshToken);
-        jwtUtil.setTokenInCookies(tokenDto, response);
-        Claims claims = jwtUtil.validateAndExtractToken(tokenDto.accessToken()).orElseThrow();
-        setAuthentication(claims);
+        try {
+            AuthServiceDto.TokenDto tokenDto = authService.reissue(refreshToken);
+            jwtUtil.setTokenInCookies(tokenDto, response);
+            Claims claims = jwtUtil.validateAndExtractToken(tokenDto.accessToken()).orElseThrow();
+            setAuthentication(claims);
+        } catch (CustomException e) {
+            log.error("{}", e);
+        }
     }
 
     private void handleTokenReissueOrDeny(HttpServletRequest request, HttpServletResponse response) {
