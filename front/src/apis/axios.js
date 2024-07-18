@@ -27,7 +27,7 @@ export const useAxiosInterceptors = () => {
         navigate('/login');
         Swal.fire({
           title: '실패!',
-          text: '로그인 정보가 만료됐거나 접근 권한이 없습니다. 다시 로그인 해주세요',
+          text: '접근 권한이 없습니다. 다시 로그인 해주세요',
           icon: 'error',
           confirmButtonText: '확인',
         });
