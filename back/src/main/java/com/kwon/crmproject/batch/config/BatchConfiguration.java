@@ -8,6 +8,7 @@ import org.springframework.batch.core.repository.support.JobRepositoryFactoryBea
 import org.springframework.batch.item.database.support.DataFieldMaxValueIncrementerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -17,6 +18,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableBatchProcessing
 @RequiredArgsConstructor
+@Profile("prod")
 public class BatchConfiguration extends DefaultBatchConfiguration {
 
     private final DataSource dataSource;
