@@ -24,14 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthApiControllerV1 {
 
     private final AuthServiceV1 authService;
-    private final JWTProperties jwtProperties;
     private final JWTUtil jwtUtil;
 
     @PostMapping("/login")
     public AuthResponse.TokenDto login(@RequestBody AuthRequest.Login request, HttpServletResponse response) {
         log.info("{}", request);
         AuthServiceDto.Login loginDto = authService.login(request.getUsername(), request.getPassword());
-        setTokenInCookies(loginDto.tokenDto(), response);
+        jwtUtil.setTokenInCookies(loginDto.tokenDto(), response);
         return new AuthResponse.TokenDto(loginDto.tokenDto().accessToken());
     }
 
@@ -39,7 +38,7 @@ public class AuthApiControllerV1 {
     public AuthResponse.TokenDto reissue(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = jwtUtil.findTokenInCookies(TokenType.REFRESH_TOKEN, request);
         AuthServiceDto.TokenDto tokenDto = authService.reissue(refreshToken);
-        setTokenInCookies(tokenDto, response);
+        jwtUtil.setTokenInCookies(tokenDto, response);
         return new AuthResponse.TokenDto(tokenDto.accessToken());
     }
 
@@ -47,47 +46,6 @@ public class AuthApiControllerV1 {
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = jwtUtil.findTokenInCookies(TokenType.REFRESH_TOKEN, request);
         authService.logout(refreshToken);
-        removeTokenInCookies(response);
-    }
-
-    private void setTokenInCookies(AuthServiceDto.TokenDto tokenDto, HttpServletResponse response) {
-        setCookie(
-                TokenType.ACCESS_TOKEN,
-                tokenDto.accessToken(),
-                response
-        );
-
-        setCookie(
-                TokenType.REFRESH_TOKEN,
-                tokenDto.refreshToken(),
-                response
-        );
-    }
-
-    private void removeTokenInCookies(HttpServletResponse response) {
-        removeCookie(
-                TokenType.ACCESS_TOKEN,
-                response
-        );
-
-        removeCookie(
-                TokenType.REFRESH_TOKEN,
-                response
-        );
-    }
-
-    private void setCookie(TokenType tokenType, String value, HttpServletResponse response) {
-        Cookie tokenCookie = new Cookie(jwtProperties.getTokenCookieName(tokenType), value);
-        tokenCookie.setHttpOnly(true);
-        tokenCookie.setPath("/");
-        tokenCookie.setMaxAge((int) (jwtProperties.getExpirationSeconds(tokenType)));
-        response.addCookie(tokenCookie);
-    }
-
-    private void removeCookie(TokenType tokenType, HttpServletResponse response) {
-        Cookie tokenCookie = new Cookie(jwtProperties.getTokenCookieName(tokenType), null);
-        tokenCookie.setPath("/");
-        tokenCookie.setMaxAge(0);
-        response.addCookie(tokenCookie);
+        jwtUtil.removeTokenInCookies(response);
     }
 }

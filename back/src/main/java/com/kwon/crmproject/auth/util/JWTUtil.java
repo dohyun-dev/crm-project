@@ -1,5 +1,6 @@
 package com.kwon.crmproject.auth.util;
 
+import com.kwon.crmproject.auth.dto.AuthServiceDto;
 import com.kwon.crmproject.common.exception.CustomException;
 import com.kwon.crmproject.common.exception.ErrorType;
 import com.kwon.crmproject.member.domain.entity.MemberRole;
@@ -7,6 +8,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -113,5 +115,46 @@ public class JWTUtil {
             jwtBuilder.claim(CLAIMS_ROLE_NAME, role);
         }
         return jwtBuilder.compact();
+    }
+
+    public void setTokenInCookies(AuthServiceDto.TokenDto tokenDto, HttpServletResponse response) {
+        setCookie(
+                TokenType.ACCESS_TOKEN,
+                tokenDto.accessToken(),
+                response
+        );
+
+        setCookie(
+                TokenType.REFRESH_TOKEN,
+                tokenDto.refreshToken(),
+                response
+        );
+    }
+
+    public void removeTokenInCookies(HttpServletResponse response) {
+        removeCookie(
+                TokenType.ACCESS_TOKEN,
+                response
+        );
+
+        removeCookie(
+                TokenType.REFRESH_TOKEN,
+                response
+        );
+    }
+
+    private void setCookie(TokenType tokenType, String value, HttpServletResponse response) {
+        Cookie tokenCookie = new Cookie(properties.getTokenCookieName(tokenType), value);
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge((int) (properties.getExpirationSeconds(tokenType)));
+        response.addCookie(tokenCookie);
+    }
+
+    private void removeCookie(TokenType tokenType, HttpServletResponse response) {
+        Cookie tokenCookie = new Cookie(properties.getTokenCookieName(tokenType), null);
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge(0);
+        response.addCookie(tokenCookie);
     }
 }
