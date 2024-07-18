@@ -55,8 +55,6 @@ public class CampaignCompleteBatchConfig {
     @Bean
     @StepScope
     public JpaPagingItemReader<Campaign> itemReader(@Value("#{jobParameters[curDate]}") LocalDate curDate) {
-        log.info("curDate={}", curDate);
-
         curDate = ObjectUtils.isEmpty(curDate) ? LocalDate.now() : curDate;
 
         return new JpaPagingItemReaderBuilder<Campaign>()
